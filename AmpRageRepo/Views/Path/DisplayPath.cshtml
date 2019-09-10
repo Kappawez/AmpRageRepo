@@ -1,0 +1,35 @@
+﻿@model AmpRageRepo.Models.Path
+
+@{
+    ViewData["Title"] = "DisplayPath";
+}
+
+<h1>DisplayPath</h1>
+
+<div>
+    <h4>Search</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Origin)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Origin)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Destination)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Destination)
+        </dd>
+        <dt class="col-sm-2">
+            Waypoints:
+        </dt>
+    </dl>
+</div>
+<div>
+    @foreach (var item in Model.WayPoints)
+    {
+        @Html.DisplayFor(modelItem => item)
+    }
+</div>
