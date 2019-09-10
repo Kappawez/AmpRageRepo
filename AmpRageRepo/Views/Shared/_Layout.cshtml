@@ -39,7 +39,7 @@
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Map">Map</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">About</a>
                         </li>
                     </ul>
                 </div>
@@ -47,15 +47,14 @@
         </nav>
     </header>
     <div class="container">
-        <partial name="_CookieConsentPartial" />
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted footer-dark bg-dark">
         <div class="container">
-            &copy; 2019 - AmpRage - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2019 - AmpRageINC - Nick, Arvid, Jocke och Micke <a asp-area="" asp-controller="Home" asp-action="About">About</a>
         </div>
     </footer>
 
