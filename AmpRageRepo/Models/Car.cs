@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AmpRageRepo
 {
-    class Car
+    public class Car
     {
         public string LicensePlate { get; set; }
         public string Brand { get; set; }

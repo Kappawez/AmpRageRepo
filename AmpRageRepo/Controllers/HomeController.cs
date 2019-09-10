@@ -6,13 +6,20 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AmpRageRepo.Models;
 
+
 namespace AmpRageRepo.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             return View();
+        }
+        public async Task<IActionResult> ViewCarInfo([Bind("LicensePlate")]Car inputCar)
+        {
+            //var car = new Car();
+            var car = await LicensePlateSearcher.FindPlate(inputCar);
+            return View(car);
         }
 
         public IActionResult Map()
