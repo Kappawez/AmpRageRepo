@@ -8,6 +8,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace AmpRageRepo.Models
 {
@@ -56,7 +57,7 @@ namespace AmpRageRepo.Models
             bool foundMatch = false;
             var counter = 0;
             var listOfProps = new List<string>();
-            string filepath = @"~/data/elcars3.txt";
+            string filepath = @"D:\Home\site\wwwroot\wwwroot\data\elcars3.txt";
             foreach (var item in File.ReadAllLines(filepath))
             {
                 if (item.ToString().Contains(rootObject.data.basic.data.make))
@@ -84,7 +85,8 @@ namespace AmpRageRepo.Models
             bool foundMatch = false;
             var counter = 0;
             var listOfProps = new List<string>();
-            string filepath = @"~/data/elcars4.txt";
+            
+            string filepath = @"D:\Home\site\wwwroot\wwwroot\data\elcars4.txt";
             foreach (var item in File.ReadAllLines(filepath))
             {
                 if (item.ToString().Contains(inputRegNumber))
