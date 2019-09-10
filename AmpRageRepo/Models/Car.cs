@@ -6,7 +6,7 @@ namespace AmpRageRepo
 {
     class Car
     {
-        public string? LicensePlate { get; set; }
+        public string LicensePlate { get; set; }
         public string Brand { get; set; }
         public string Make { get; set; }
         public decimal Capacity { get; set; }
@@ -20,6 +20,10 @@ namespace AmpRageRepo
         {
             var listOfProps = new List<string>();
 
+            if (this.LicensePlate.Length > 0)
+            {
+                listOfProps.Add(this.LicensePlate);
+            }
             listOfProps.Add(this.Brand);
             listOfProps.Add(this.Make);
             listOfProps.Add(this.Capacity.ToString());
