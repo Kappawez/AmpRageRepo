@@ -4,32 +4,72 @@
     ViewData["Title"] = "DisplayPath";
 }
 
-<h1>DisplayPath</h1>
+<div class="row">
+    <div class="col-md-12">
 
-<div>
-    <h4>Search</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Origin)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Origin)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Destination)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Destination)
-        </dd>
-        <dt class="col-sm-2">
-            Waypoints:
-        </dt>
-    </dl>
+        <div id="dvMap" style="min-height:500px"></div>
+
+    </div>
 </div>
-<div>
-    @foreach (var item in Model.WayPoints)
-    {
-        @Html.DisplayFor(modelItem => item)
-    }
-</div>
+
+@section scripts{
+
+    <!--ENSURE YOU CHANGE TO YOUR OWN API KEY HERE !!! -->
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCIzHA5mZwa3FIinpH-qpuSg4NNFUnrOj8" type="text/javascript"></script>
+
+    <!-- code for example 1 -->
+    <script>
+
+        var source, destination;
+        var locations = [];
+        var directionsDisplay;
+        var directionsService = new google.maps.DirectionsService();
+
+        // initialise the location of the map on Chichester in England (ref lat and lng)
+        var map = new google.maps.Map(document.getElementById('dvMap'), {
+            center: { lat: 62, lng: 17 },
+            zoom: 7,
+            mapTypeId: 'roadmap'
+        });
+
+        google.maps.event.addDomListener(window, 'load', function () {
+            directionsDisplay = new google.maps.DirectionsRenderer({ 'draggable': true });
+            GetRoute();
+        });
+
+        function GetRoute() {
+            directionsDisplay.setMap(map);
+
+            var wayPoints = [];
+
+            @foreach (var item in Model.WayPoints)
+            {
+                @:wayPoints.push({ location: "@item", stopover: true });
+            }
+
+            var request = {
+                origin: "@Model.Origin",
+                destination: "@Model.Destination",
+                waypoints: wayPoints, //an array of waypoints
+                optimizeWaypoints: true, //set to true if you want google to determine the shortest route or false to use the order specified.
+                travelMode: google.maps.DirectionsTravelMode.DRIVING
+            };
+
+            directionsService.route(request, function (response, status) {
+                console.log(status);
+                if (status == google.maps.DirectionsStatus.OK) {
+
+                    response.routes[0].legs.forEach(function (item, index) {
+                    });
+
+                    directionsDisplay.setDirections(response);
+                }
+                else {
+                    //handle error
+                }
+            })
+        };
+
+    </script>
+    <!-- end code for example 1 -->
+}
