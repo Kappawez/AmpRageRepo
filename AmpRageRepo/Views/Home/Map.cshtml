@@ -11,13 +11,13 @@
 
         <div> Add Destination</div>
         <div>
-            <input id="travelto" type="text" name="name" value="Oving, UK" />
+            <input id="travelto" type="text" name="name" value="Fjollträsk" />
             <input type="button" value="Add" onclick="PushDestination()" />
-            <a href="#" onclick="setDestination('Tagmere, UK')">Tagmere, UK. </a>
-            <a href="#" onclick="setDestination('Bosham, UK')">Bosham, UK</a>
+            <a href="#" onclick="setDestination('Sundsvall')">Sundsvall </a>
+            <a href="#" onclick="setDestination('Stockholm')">Stockholm</a>
         </div>
         <div id="destinations"></div><br />
-        Source : <input id="travelfrom" type="text" name="name" value="Chichester, UK" />   <br />  <br />
+        Source : <input id="travelfrom" type="text" name="name" value="Umeå" />   <br />  <br />
 
 
         <input type="button" value="Calculate" onclick="GetRoute()" />
@@ -57,7 +57,7 @@
 
         // initialise the location of the map on Chichester in England (ref lat and lng)
         var map = new google.maps.Map(document.getElementById('dvMap'), {
-            center: { lat: 50.834697, lng: -0.773792 },
+            center: { lat: 63.829605, lng: 20.261197 },
             zoom: 13,
             mapTypeId: 'roadmap'
         });
