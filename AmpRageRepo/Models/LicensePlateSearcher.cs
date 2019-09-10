@@ -56,7 +56,7 @@ namespace AmpRageRepo.Models
             bool foundMatch = false;
             var counter = 0;
             var listOfProps = new List<string>();
-            string filepath = @"C:/tmp/elcars3.txt";
+            string filepath = @"../AmpRageRepo/wwwroot/data/elcars3.txt";
             foreach (var item in File.ReadAllLines(filepath))
             {
                 if (item.ToString().Contains(rootObject.data.basic.data.make))
@@ -84,7 +84,7 @@ namespace AmpRageRepo.Models
             bool foundMatch = false;
             var counter = 0;
             var listOfProps = new List<string>();
-            string filepath = @"C:/tmp/elcars4.txt";
+            string filepath = @"../AmpRageRepo/wwwroot/data/elcars4.txt";
             foreach (var item in File.ReadAllLines(filepath))
             {
                 if (item.ToString().Contains(inputRegNumber))
