@@ -14,15 +14,23 @@ namespace AmpRageRepo.Models
 {
     public class LicensePlateSearcher
     {
+        static AmpContext _contex = new AmpContext();
+
         [HttpGet]
         public static async Task<Car> FindPlate(Car inputCar)
         {
             //var inputRegNumber = "XJE60L";
             var inputRegNumber = inputCar.LicensePlate;
-            var car = CheckForPlateInFile(inputRegNumber);
-            if (car.Brand != null)
+            SearchedCar searchedCar = CheckForPlateInFile(inputRegNumber);
+            if (searchedCar != null)
             {
-                return car;
+                return new Car()
+                {
+                    Id = searchedCar.Id,
+                    Brand = searchedCar.Brand,
+                    Make = searchedCar.Make,
+                    LicensePlate = searchedCar.LicensePlate
+                }; ;
             }
             RootObject rootObject = null;
             var apiAddress = $@"https://api.biluppgifter.se/api/v1/vehicle/regno/{inputRegNumber}?api_token=HVoQrD3Lz8iFKKgUKV2VVALvlCbfPkiC2tTl1uaHM9iG2aAtjV9nWguASFc1";
@@ -46,84 +54,33 @@ namespace AmpRageRepo.Models
                 }
 
             }
-            car = FindMatchingCar(rootObject);
+            var car = FindMatchingCar(rootObject);
 
-
+            _contex.Add(new SearchedCar()
+            {
+                Brand = car.Brand,
+                Make = car.Make,
+                LicensePlate = car.LicensePlate
+            });
+            _contex.SaveChanges();
             return car;
         }
 
         private static Car FindMatchingCar(RootObject rootObject)
         {
-            bool foundMatch = false;
-            var counter = 0;
-            var listOfProps = new List<string>();
-            string filepath = @"D:\Home\site\wwwroot\wwwroot\data\elcars3.txt";
-            foreach (var item in File.ReadAllLines(filepath))
-            {
-                if (item.ToString().Contains(rootObject.data.basic.data.make))
-                {
-                    foundMatch = true;
-                    listOfProps.Add(item.ToString());
-                }
-                if (foundMatch && counter != 10) //NUMBER OF LINES IT TAKES + 1)
-                {
-                    listOfProps.Add(item.ToString());
-                    counter++;
-                }
-            };
-            var car = new Car();
-            if (listOfProps.Count > 0)
-            {
-                car = CreateCar(listOfProps);
-            }
+
+            var tempMake = rootObject.data.basic.data.make.Split(';');
+
+            var car = _contex.Cars.Where(x => x.Brand.Contains(rootObject.data.basic.data.make)).FirstOrDefault(); // Searching only on brand, not model
+
+            car.LicensePlate = rootObject.data.attributes.regno;
 
             return car;
         }
 
-        private static Car CheckForPlateInFile(string inputRegNumber)
+        private static SearchedCar CheckForPlateInFile(string inputRegNumber)
         {
-            bool foundMatch = false;
-            var counter = 0;
-            var listOfProps = new List<string>();
-            
-            string filepath = @"D:\Home\site\wwwroot\wwwroot\data\elcars4.txt";
-            foreach (var item in File.ReadAllLines(filepath))
-            {
-                if (item.ToString().Contains(inputRegNumber))
-                {
-                    foundMatch = true;
-                    listOfProps.Add(item.ToString());
-
-                }
-                if (foundMatch && counter != 10) //NUMBER OF LINES IT TAKES + 1)
-                {
-                    listOfProps.Add(item.ToString());
-                    counter++;
-                }
-            };
-            var car = new Car();
-            if (listOfProps.Count > 0)
-            {
-                car = CreateCar(listOfProps);
-            }
-
-            return car;
-        }
-
-        private static Car CreateCar(List<string> listOfProps)
-        {
-            var car = new Car()
-            {
-                Brand = listOfProps[1],
-                Make = listOfProps[2],
-                Capacity = decimal.Parse(listOfProps[3]),
-                ZeroToHundred = decimal.Parse(listOfProps[4]),
-                TopSpeed = int.Parse(listOfProps[5]),
-                Range = int.Parse(listOfProps[6]),
-                Efficiency = decimal.Parse(listOfProps[7]),
-                Fastcharge = int.Parse(listOfProps[8])
-            };
-            return car;
+            return _contex.SearchedCars.Where(x => x.LicensePlate == inputRegNumber).FirstOrDefault(); ;
         }
     }
 }
