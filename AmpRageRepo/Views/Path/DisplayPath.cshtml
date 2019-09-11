@@ -1,5 +1,6 @@
 ﻿@model AmpRageRepo.Models.Path
 
+
 @{
     ViewData["Title"] = "DisplayPath";
 }
@@ -36,6 +37,7 @@
             directionsDisplay = new google.maps.DirectionsRenderer({ 'draggable': true });
             GetRoute();
         });
+
 
         function GetRoute() {
             directionsDisplay.setMap(map);
