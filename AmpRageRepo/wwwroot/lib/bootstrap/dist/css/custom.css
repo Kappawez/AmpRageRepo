@@ -1,0 +1,104 @@
+.navbar-brand {
+    font-size:75px;
+    
+}
+.nav-link {
+    font-size:25px;
+    
+}
+
+
+
+body {
+    padding: 0;
+    margin: 0;
+    background: teal;
+}
+
+
+
+
+/*--- navigation bar ---*/
+.navbar {
+    background: #6ab446;
+   
+}
+
+.nav-link,
+.navbar-brand {
+    color: #fff;
+    cursor: pointer;
+}
+
+.nav-link {
+    margin-right: 1em !important;
+}
+
+    .nav-link:hover {
+        color: #000;
+    }
+
+.navbar-collapse {
+    justify-content: flex-end;
+}
+
+.description {
+    left: 50%;
+    position: absolute;
+    top: 58%;
+    transform: translate(-50%, -55%);
+    text-align: center;
+}
+
+    .description h1 {
+        color: #6ab446;
+    }
+
+    .description p {
+        color: #fff;
+        font-size: 1.3rem;
+        line-height: 1.5;
+    }
+
+.footer {
+    background-color: teal;
+   
+}
+.annat {
+    margin: 0.5em auto;
+    padding: 1em;
+    position: relative;
+}
+.container{
+    color:white;
+}
+.containers{
+    color:red;
+}
+
+.features {
+    margin: 4em auto;
+    padding: 1em;
+    position: relative;
+}
+.featuress {
+    margin: 4em auto;
+    padding: 1em;
+    position: relative;
+}
+
+.feature-title {
+    color: #333;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.features img {
+    -webkit-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
+    margin-bottom: 15px;
+}
+
