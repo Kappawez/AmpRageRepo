@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace AmpRageRepo.Models
 {
@@ -12,8 +13,11 @@ namespace AmpRageRepo.Models
             WayPoints = new List<string>();
         }
 
+        [Required(ErrorMessage = "Orgin is required.")]
         public string Origin { get; set; }
+        [Required(ErrorMessage = "Destination is required.")]
         public string Destination { get; set; }
+        [Required(ErrorMessage = "Range is required.")]
         public int Range { get; set; } //km
         public double EffectiveRange { get; set; } //km -> m -> x0.8
 
