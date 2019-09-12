@@ -14,19 +14,21 @@
         <div id="dvMap" style="min-height:500px"></div>
     </div>
 </div>
-<div class="info">
+
+@*<div class="info">
     <div class="col-md-12">
 
         <button data-toggle="collapse" data-target="#demo">Collapsible</button>
 
         <div id="demo" class="collapse">
-            @*@foreach (var item in Model.WayPoints)
+            @foreach (var item in Model.WayPoints)
             {
                 <td>@item.Length</td>
-            }*@
+            }@
         </div>
     </div>
 </div>
+    *@
 
 @section scripts{
 
@@ -59,7 +61,7 @@
             GetRoute();
         });
 
-        directionsDisplay.setPanel(document.getElementById('demo')); 
+        //directionsDisplay.setPanel(document.getElementById('demo')); 
 
         function GetRoute() {
             directionsDisplay.setMap(map);
