@@ -25,5 +25,10 @@ namespace AmpRageRepo.Models
         public double EffectiveRange { get; set; } //km -> m -> x0.8
 
         public List<string> WayPoints { get; set; }
+
+        public void ChangeRange(int aRange)
+        {
+            this.Range = aRange;
+        }
     }
 }
