@@ -20,8 +20,6 @@ namespace AmpRageRepo.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePath(Path path)
         {
-            path.EffectiveRange = (path.Range * 1000 * 0.8); //km -> m -> x0.8
-
             var direction = await GetDirection(path);
 
             if (await EvaluateDirection(direction, path) == false)
@@ -39,6 +37,9 @@ namespace AmpRageRepo.Controllers
         private async Task<DirectionRootObject> GetDirection(Path path)
         {
             DirectionRootObject rootObject = null;
+
+            path.Range = 100;
+            path.EffectiveRange = (path.Range * 1000 * 0.8); //km -> m -> x0.8
 
             string request = GetRequestString(path);
 

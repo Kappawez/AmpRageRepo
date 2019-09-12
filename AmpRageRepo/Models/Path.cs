@@ -18,7 +18,7 @@ namespace AmpRageRepo.Models
         [Required(ErrorMessage = "Destination is required.")]
         public string Destination { get; set; }
         [Required(ErrorMessage = "Range is required.")]
-        public int Range { get; set; } //km
+        public double Range { get; set; } //km
         public double EffectiveRange { get; set; } //km -> m -> x0.8
 
         public List<string> WayPoints { get; set; }
