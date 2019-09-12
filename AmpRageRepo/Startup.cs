@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AmpRageRepo.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 namespace AmpRageRepo
 {
@@ -51,7 +53,19 @@ namespace AmpRageRepo
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(new CultureInfo("en-GB")),
+                SupportedCultures = new List<CultureInfo>
+              {
+                  new CultureInfo("en-GB")
+              }
+              ,
+                SupportedUICultures = new List<CultureInfo>
+              {
+                  new CultureInfo("GB")
+              }
+            });
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
