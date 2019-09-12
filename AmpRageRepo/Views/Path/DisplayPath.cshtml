@@ -7,9 +7,11 @@
 
 <div class="row">
     <div class="col-md-12">
+        <!--Ugly solution for javascript to get utf-8 encoded strings-->
+        <p hidden id="origin">"@Model.Origin"</p>
+        <p hidden id="dest">"@Model.Destination"</p>
 
         <div id="dvMap" style="min-height:500px"></div>
-
     </div>
 </div>
 <div class="info">
@@ -29,11 +31,15 @@
 @section scripts{
 
     <!--ENSURE YOU CHANGE TO YOUR OWN API KEY HERE !!! -->
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCIzHA5mZwa3FIinpH-qpuSg4NNFUnrOj8" type="text/javascript"></script>
+    <script 
+            src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCIzHA5mZwa3FIinpH-qpuSg4NNFUnrOj8&" 
+            type="text/javascript"
+            charset="utf-8"
+            >
+    </script>
 
     <!-- code for example 1 -->
     <script>
-
         var source, destination;
         var locations = [];
         var directionsDisplay;
@@ -66,8 +72,8 @@
             }
 
             var request = {
-                origin: "@Model.Origin",
-                destination: "@Model.Destination",
+                origin: document.getElementById('origin').textContent,
+                destination: document.getElementById('dest').textContent,
                 waypoints: wayPoints, //an array of waypoints
                 optimizeWaypoints: true, //set to true if you want google to determine the shortest route or false to use the order specified.
                 travelMode: google.maps.DirectionsTravelMode.DRIVING
