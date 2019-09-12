@@ -15,12 +15,7 @@ namespace AmpRageRepo.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> ViewCarInfo([Bind("LicensePlate")]Car inputCar)
-        {
-            //var car = new Car();
-            var car = await LicensePlateSearcher.FindPlate(inputCar);
-            return View(car);
-        }
+
 
         public IActionResult Map()
         {
@@ -31,10 +26,7 @@ namespace AmpRageRepo.Controllers
         {
             return View();
         }
-        public IActionResult SearchByReg()
-        {
-            return View();
-        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

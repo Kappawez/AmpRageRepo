@@ -1,25 +1,45 @@
 ﻿@model AmpRageRepo.Models.Path
 
+
 @{
     ViewData["Title"] = "DisplayPath";
 }
 
 <div class="row">
     <div class="col-md-12">
-         console.log("@Model.Destination" "@Model.Origin");
-        <div id="dvMap" style="min-height:500px"></div>
+        <!--Ugly solution for javascript to get utf-8 encoded strings-->
+        <p hidden id="origin">"@Model.Origin"</p>
+        <p hidden id="dest">"@Model.Destination"</p>
 
+        <div id="dvMap" style="min-height:500px"></div>
+    </div>
+</div>
+<div class="info">
+    <div class="col-md-12">
+
+        <button data-toggle="collapse" data-target="#demo">Collapsible</button>
+
+        <div id="demo" class="collapse">
+            @*@foreach (var item in Model.WayPoints)
+            {
+                <td>@item.Length</td>
+            }*@
+        </div>
     </div>
 </div>
 
 @section scripts{
 
     <!--ENSURE YOU CHANGE TO YOUR OWN API KEY HERE !!! -->
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCIzHA5mZwa3FIinpH-qpuSg4NNFUnrOj8" type="text/javascript"></script>
+    <script 
+            src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBxb_cf_iJ3-24dffKVrlAfwGEZjTCSkGI&" 
+            type="text/javascript"
+            charset="utf-8"
+            >
+    </script>
 
     <!-- code for example 1 -->
     <script>
-
         var source, destination;
         var locations = [];
         var directionsDisplay;
@@ -32,15 +52,16 @@
             mapTypeId: 'roadmap'
         });
 
+        
+
         google.maps.event.addDomListener(window, 'load', function () {
             directionsDisplay = new google.maps.DirectionsRenderer({ 'draggable': true });
             GetRoute();
         });
 
-        function GetRoute() {
-            console.log("@Model.Origin");
-            console.log("@Model.Destination");
+        directionsDisplay.setPanel(document.getElementById('demo')); 
 
+        function GetRoute() {
             directionsDisplay.setMap(map);
 
             var wayPoints = [];
@@ -51,8 +72,8 @@
             }
 
             var request = {
-                origin: "@Model.Origin",
-                destination: "@Model.Destination",
+                origin: document.getElementById('origin').textContent,
+                destination: document.getElementById('dest').textContent,
                 waypoints: wayPoints, //an array of waypoints
                 optimizeWaypoints: true, //set to true if you want google to determine the shortest route or false to use the order specified.
                 travelMode: google.maps.DirectionsTravelMode.DRIVING

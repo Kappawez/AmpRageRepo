@@ -1,0 +1,83 @@
+﻿@model IEnumerable<AmpRageRepo.Car>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.LicensePlate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Brand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Make)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Capacity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ZeroToHundred)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TopSpeed)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Range)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Efficiency)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fastcharge)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.LicensePlate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Brand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Make)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ZeroToHundred)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TopSpeed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Range)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Efficiency)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fastcharge)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

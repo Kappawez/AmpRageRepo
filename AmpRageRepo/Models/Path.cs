@@ -14,7 +14,8 @@ namespace AmpRageRepo.Models
 
         public string Origin { get; set; }
         public string Destination { get; set; }
-        public int Range { get; set; }
+        public int Range { get; set; } //km
+        public double EffectiveRange { get; set; } //km -> m -> x0.8
 
         public List<string> WayPoints { get; set; }
     }

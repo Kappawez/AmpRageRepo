@@ -17,15 +17,15 @@
               crossorigin="anonymous"
               integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" />
     </environment>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/custom.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+        <div class="annat"></div>
+        <nav class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/fav1.png" width="30" height="30" alt="">
-                </a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/fav1.png" width="30" height="30"/></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -42,7 +42,13 @@
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">About</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="SearchByReg">SearchByReg</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Cars" asp-action="SearchByReg">SearchByReg</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Path" asp-action="CreatePath">CreatePath</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Cars" asp-action="Index">CreatePath</a>
                         </li>
                     </ul>
                 </div>
@@ -57,7 +63,7 @@
 
     <footer class="border-top footer text-muted footer-dark bg-dark">
         <div class="container">
-            &copy; 2019 - AmpRageINC - Nick, Arvid, Jocke och Micke <a asp-area="" asp-controller="Home" asp-action="About">About</a>
+            <p>2019 - AmpRageINC - Nick, Arvid, Jocke och Micke </p>
         </div>
     </footer>
 

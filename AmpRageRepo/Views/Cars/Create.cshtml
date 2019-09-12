@@ -1,0 +1,70 @@
+﻿@model AmpRageRepo.Car
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Car</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="LicensePlate" class="control-label"></label>
+                <input asp-for="LicensePlate" class="form-control" />
+                <span asp-validation-for="LicensePlate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Brand" class="control-label"></label>
+                <input asp-for="Brand" class="form-control" />
+                <span asp-validation-for="Brand" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Make" class="control-label"></label>
+                <input asp-for="Make" class="form-control" />
+                <span asp-validation-for="Make" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Capacity" class="control-label"></label>
+                <input asp-for="Capacity" class="form-control" />
+                <span asp-validation-for="Capacity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ZeroToHundred" class="control-label"></label>
+                <input asp-for="ZeroToHundred" class="form-control" />
+                <span asp-validation-for="ZeroToHundred" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TopSpeed" class="control-label"></label>
+                <input asp-for="TopSpeed" class="form-control" />
+                <span asp-validation-for="TopSpeed" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Range" class="control-label"></label>
+                <input asp-for="Range" class="form-control" />
+                <span asp-validation-for="Range" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Efficiency" class="control-label"></label>
+                <input asp-for="Efficiency" class="form-control" />
+                <span asp-validation-for="Efficiency" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Fastcharge" class="control-label"></label>
+                <input asp-for="Fastcharge" class="form-control" />
+                <span asp-validation-for="Fastcharge" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
