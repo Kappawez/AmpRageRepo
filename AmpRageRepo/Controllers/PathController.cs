@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using AmpRageRepo.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
+using AmpRageRepo.Models;
 
 namespace AmpRageRepo.Controllers
 {
@@ -20,7 +21,15 @@ namespace AmpRageRepo.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePath(Path path)
         {
-            path.EffectiveRange = (path.Range * 1000 * 0.8); //km -> m -> x0.8
+            var car = await LicensePlateSearcher.FindPlate(new Car() { LicensePlate = path.LicensePlate });
+            if (car == null || car.Range == 0)
+            {
+                path.Range = 300;                               //300km as a standard if the program dont find any car
+            } else
+            {
+                path.Range = car.Range;
+            }
+            path.EffectiveRange = (path.Range * 1000 * 0.8);    //km -> m -> x0.8
 
             var direction = await GetDirection(path);
 

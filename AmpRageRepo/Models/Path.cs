@@ -17,7 +17,10 @@ namespace AmpRageRepo.Models
         public string Origin { get; set; }
         [Required(ErrorMessage = "Destination is required.")]
         public string Destination { get; set; }
-        [Required(ErrorMessage = "Range is required.")]
+        [Display(Name = "License Plate")]
+        [Required(ErrorMessage = "License Plate is required.")]
+        [StringLength(6, ErrorMessage = "License Plate must be 6 chars")]
+        public string LicensePlate { get; set; }
         public int Range { get; set; } //km
         public double EffectiveRange { get; set; } //km -> m -> x0.8
 
