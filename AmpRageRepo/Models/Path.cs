@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AmpRageRepo.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,8 +8,9 @@ namespace AmpRageRepo.Models
 {
     public class Path
     {
-        public Path()
+        public Path(SecretController secret)
         {
+            Secret = secret;
             WayPoints = new List<string>();
         }
 
@@ -18,5 +20,8 @@ namespace AmpRageRepo.Models
         public double EffectiveRange { get; set; } //km -> m -> x0.8
 
         public List<string> WayPoints { get; set; }
+        public SecretController Secret { get; private set; }
+
+
     }
 }
