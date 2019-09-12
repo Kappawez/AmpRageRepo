@@ -11,6 +11,7 @@ namespace AmpRageRepo.Models
         public Path()
         {
             WayPoints = new List<string>();
+            step = new Step();
         }
 
         [Required(ErrorMessage = "Orgin is required.")]
@@ -23,6 +24,12 @@ namespace AmpRageRepo.Models
         public string LicensePlate { get; set; }
         public int Range { get; set; } //km
         public double EffectiveRange { get; set; } //km -> m -> x0.8
+        public int LegCount { get; set; }
+        public double totalDist;
+        public Step step;
+
+        public double MinRange { get; set; }
+        public double MaxRange { get; set; }
 
         public List<string> WayPoints { get; set; }
 

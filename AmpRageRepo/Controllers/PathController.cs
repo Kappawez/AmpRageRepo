@@ -6,13 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using AmpRageRepo.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
-using AmpRageRepo.Models;
 
 namespace AmpRageRepo.Controllers
 {
     public class PathController : Controller
     {
         public static string apiKey = "AIzaSyBxb_cf_iJ3-24dffKVrlAfwGEZjTCSkGI";
+        public Leg lastOkStep = null;
+        public int wps = 0;
 
         public IActionResult CreatePath()
         {
@@ -23,19 +24,35 @@ namespace AmpRageRepo.Controllers
         {
             if (path.Range == 0)
             {
-                var car = await LicensePlateSearcher.FindPlate(path.LicensePlate);
-                path.Range = car.Range;
-                path.EffectiveRange = (path.Range * 1000 * 0.8);    //km -> m -> x0.8
+                //var car = await LicensePlateSearcher.FindPlate(path.LicensePlate);
+                path.Range = 100;
+                path.MaxRange = (path.Range * 1000);    //km -> m
+                path.MinRange = (path.Range * 1000 * 0.2);
+                path.EffectiveRange = path.MaxRange;
+                path.totalDist = path.MaxRange;
             }
-
 
             var direction = await GetDirection(path);
 
-            if (await EvaluateDirection(direction, path) == false)
+            try
             {
-                //recursion?!
-                await CreatePath(path);
+                int x = 0;
+
+                while (await EvaluateDirection(direction, path) == false)
+                {
+                    if (x > 20)
+                        throw new Exception();
+
+                    x++;
+                    direction = await GetDirection(path);
+                }
             }
+            catch
+            {
+
+                throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
+            }
+
 
             return RedirectToAction(nameof(DisplayPath), path);
         }
@@ -72,7 +89,7 @@ namespace AmpRageRepo.Controllers
                     }
                 }
             }
-
+            //await EvaluateDirection(rootObject, path);
             return rootObject;
         }
         private string GetRequestString(Path path)
@@ -103,7 +120,6 @@ namespace AmpRageRepo.Controllers
                 double totalDistance = 0; //total distance for direction
                 double lastOkDistance = 0; //last distance that was less than range
                 double currentStepValue = 0; //distance for one step
-
                 List<Step> stepList = new List<Step>();
 
                 foreach (var route in direction.routes)
@@ -113,22 +129,24 @@ namespace AmpRageRepo.Controllers
                         foreach (var step in leg.steps)
                         {
                             stepList.Add(step);
+
                             currentStepValue = step.distance.value;
                             totalDistance += currentStepValue;
+
                             path.EffectiveRange -= currentStepValue;
 
-                            if (path.EffectiveRange < (path.Range * 1000 * 0.1))
+                            if (path.EffectiveRange <= 0)
                             {
-                                path.EffectiveRange = await ChooseChargingStation(stepList, path, lastOkDistance);
+                                path.totalDist += path.MaxRange;
+                                path.EffectiveRange = path.totalDist;
 
-                                //By now a waypoint has been added to the direction
-                                //redo the direction with the new waypoint
+                                string address = await ChooseChargingStation(stepList, path);
+
+                                path.WayPoints.Add(address);
+
                                 return false;
                             }
-                            else
-                            {
-                                lastOkDistance += currentStepValue;
-                            }
+                            lastOkDistance += currentStepValue;
                         }
                     }
                 }
@@ -139,10 +157,11 @@ namespace AmpRageRepo.Controllers
             }
             return true;
         }
-        private async Task<double> ChooseChargingStation(List<Step> steps, Path path, double distance)
+        private async Task<string> ChooseChargingStation(List<Step> steps, Path path)
         {
+
             //TODO get a list of coordEntity
-            var coordEntity = await GetChargingStationLocation(steps, path, distance);
+            var coordEntity = await GetChargingStationLocation(steps, path);
 
             //TODO get a list of chargintStation for each coordEntity
             //TODO choose chargintStation based on other things than shortest route (timeToCharge etc)
@@ -151,11 +170,9 @@ namespace AmpRageRepo.Controllers
             //TODO add timeToCharge to traveltime
             var timeToCharge = ChargingCalculator(35.8, chargingStation);
 
-            path.WayPoints.Add(coordEntity.Address);
-
             //Temp fins one charging station and adds a million range
             //TODO logic for charging car
-            return (path.Range * 1000 * 0.8);
+            return coordEntity.Address;
         }
         private int ChargingCalculator(double carCapacity, ChargingStationRootObject chargingStation)
         {
@@ -200,7 +217,7 @@ namespace AmpRageRepo.Controllers
             }
             return rootObjects[0];
         }
-        private async Task<CoordinateEntity> GetChargingStationLocation(List<Step> steps, Path path, double currentDistance)
+        private async Task<CoordinateEntity> GetChargingStationLocation(List<Step> steps, Path path)
         {
             //documentation: https://developers.google.com/places/web-service/search
             //Magic numbers to not do too many api requests
@@ -218,7 +235,7 @@ namespace AmpRageRepo.Controllers
                     if (currentSearch > maxSearch)
                         throw new Exception("Too many requests");
 
-                    var maxCoord = GetMaxCoord(coordEntity, currentDistance, path.EffectiveRange);
+                    var maxCoord = GetMaxCoord(coordEntity, path);
 
                     currentSearch++;
                     var search = await SearchForChargingStations(maxCoord);
@@ -277,7 +294,7 @@ namespace AmpRageRepo.Controllers
             return rootObject;
         }
 
-        private string GetMaxCoord(List<CoordinateEntity> coords, double currentDistance, double maxDistance)
+        private string GetMaxCoord(List<CoordinateEntity> coords, Path path)
         {
             //Returns the coordinate where range runs out
 
@@ -288,6 +305,8 @@ namespace AmpRageRepo.Controllers
             double currentLng;
 
             int loop = 0;
+
+            var value = path.MaxRange;
 
             for (int i = 1; i < coords.Count; i++)
             {
@@ -301,9 +320,11 @@ namespace AmpRageRepo.Controllers
                 currentLat = coords[i].Latitude;
                 currentLng = coords[i].Longitude;
 
-                currentDistance += DistanceBetweenCoords(lastLat, lastLng, currentLat, currentLng, 'M');
+                var amount = DistanceBetweenCoords(lastLat, lastLng, currentLat, currentLng, 'M');
 
-                if (currentDistance >= maxDistance)
+                value -= amount;
+
+                if (value <= 0)
                     return currentLat + "," + currentLng;
 
                 lastLat = currentLat;
