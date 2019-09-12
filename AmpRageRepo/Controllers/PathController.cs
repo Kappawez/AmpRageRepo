@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using AmpRageRepo.Models;
 using System.Net.Http;
 using Newtonsoft.Json;
+using AmpRageRepo.Models;
 
 namespace AmpRageRepo.Controllers
 {
@@ -20,7 +21,13 @@ namespace AmpRageRepo.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePath(Path path)
         {
-            path.EffectiveRange = (path.Range * 1000 * 0.8); //km -> m -> x0.8
+            if (path.Range == 0)
+            {
+                var car = await LicensePlateSearcher.FindPlate(path.LicensePlate);
+                path.Range = car.Range;
+                path.EffectiveRange = (path.Range * 1000 * 0.8);    //km -> m -> x0.8
+            }
+
 
             var direction = await GetDirection(path);
 
@@ -108,10 +115,11 @@ namespace AmpRageRepo.Controllers
                             stepList.Add(step);
                             currentStepValue = step.distance.value;
                             totalDistance += currentStepValue;
+                            path.EffectiveRange -= currentStepValue;
 
-                            if (totalDistance > (path.EffectiveRange))
+                            if (path.EffectiveRange < (path.Range * 1000 * 0.1))
                             {
-                                path.Range += await ChooseChargingStation(stepList, path, lastOkDistance);
+                                path.EffectiveRange = await ChooseChargingStation(stepList, path, lastOkDistance);
 
                                 //By now a waypoint has been added to the direction
                                 //redo the direction with the new waypoint
@@ -131,7 +139,7 @@ namespace AmpRageRepo.Controllers
             }
             return true;
         }
-        private async Task<int> ChooseChargingStation(List<Step> steps, Path path, double distance)
+        private async Task<double> ChooseChargingStation(List<Step> steps, Path path, double distance)
         {
             //TODO get a list of coordEntity
             var coordEntity = await GetChargingStationLocation(steps, path, distance);
@@ -147,7 +155,7 @@ namespace AmpRageRepo.Controllers
 
             //Temp fins one charging station and adds a million range
             //TODO logic for charging car
-            return 1000000;
+            return (path.Range * 1000 * 0.8);
         }
         private int ChargingCalculator(double carCapacity, ChargingStationRootObject chargingStation)
         {

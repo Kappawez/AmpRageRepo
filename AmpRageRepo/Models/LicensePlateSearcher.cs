@@ -17,20 +17,15 @@ namespace AmpRageRepo.Models
         static AmpContext _contex = new AmpContext();
 
         [HttpGet]
-        public static async Task<Car> FindPlate(Car inputCar)
+        public static async Task<Car> FindPlate(string inputRegNumber)
         {
             //var inputRegNumber = "XJE60L";
-            var inputRegNumber = inputCar.LicensePlate;
             SearchedCar searchedCar = CheckForPlateInFile(inputRegNumber);
             if (searchedCar != null)
             {
-                return new Car()
-                {
-                    Id = searchedCar.Id,
-                    Brand = searchedCar.Brand,
-                    Make = searchedCar.Make,
-                    LicensePlate = searchedCar.LicensePlate
-                }; ;
+                var aCar = _contex.Cars.Where(x => x.Make == searchedCar.Make).FirstOrDefault();
+                aCar.LicensePlate = searchedCar.LicensePlate;
+                return aCar;
             }
             RootObject rootObject = null;
             var apiAddress = $@"https://api.biluppgifter.se/api/v1/vehicle/regno/{inputRegNumber}?api_token=HVoQrD3Lz8iFKKgUKV2VVALvlCbfPkiC2tTl1uaHM9iG2aAtjV9nWguASFc1";
@@ -71,7 +66,7 @@ namespace AmpRageRepo.Models
 
             var tempMake = rootObject.data.basic.data.make.Split(';');
 
-            var car = _contex.Cars.Where(x => x.Brand.Contains(rootObject.data.basic.data.make)).FirstOrDefault(); // Searching only on brand, not model
+            var car = _contex.Cars.Where(x => x.Brand == rootObject.data.basic.data.make).FirstOrDefault(); // Searching only on brand, not model
 
             car.LicensePlate = rootObject.data.attributes.regno;
 
