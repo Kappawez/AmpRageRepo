@@ -13,6 +13,7 @@ using AmpRageRepo.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using AmpRageRepo.Controllers;
 
 namespace AmpRageRepo
 {
@@ -35,7 +36,9 @@ namespace AmpRageRepo
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+
             var connection = @"Server=tcp:amprage.database.windows.net,1433;Initial Catalog=AmpRageDB;Persist Security Info=False;User ID=Shadowacademy;Password=PatrikWiksten2019;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            services.AddSingleton(new SecretController());
             services.AddDbContext<AmpContext>(options => options.UseSqlServer(connection));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
