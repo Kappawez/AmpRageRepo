@@ -5,49 +5,63 @@
     ViewData["Title"] = "DisplayPath";
 }
 
+
 <div class="row">
     <div class="col-md-12">
-        <!--Ugly solution for javascript to get utf-8 encoded strings-->
+        Ugly solution for javascript to get utf-8 encoded strings
         <p hidden id="origin">"@Model.Origin"</p>
         <p hidden id="dest">"@Model.Destination"</p>
 
-        <div id="loopDiv">
-            <ul id="list">
-            </ul>
-        </div>
-
-        @foreach (var item in Model.WayPointStrings)
-        {
-            @Html.Raw("Hej");
-        }
-
         <div id="dvMap" style="min-height:500px"></div>
+
+
+    </div>
+</div>
+<br />
+@*<div class="hejsan">
+    <div class="col-md-12">
+        <button data-toggle="collapse" data-target="#directions_panel">More info</button>
+        <div id="control_panel" style="float:right;width:30%;text-align:left;padding-top:20px">
+        <div id="directions_panel" class="collapse"></div>
+       
     </div>
 </div>
 
-@*<div class="info">
+<br />
+<div class="info">
     <div class="col-md-12">
 
-        <button data-toggle="collapse" data-target="#demo">Collapsible</button>
+        <button data-toggle="collapse" data-target="#demo">Specific info</button>
 
-        <div id="demo" class="collapse">
-            @foreach (var item in Model.WayPoints)
-            {
-                <td>@item.Length</td>
-            }@
-        </div>
+        <div id="demo" class="collapse"></div>
+
+
+    </div>
+</div>*@
+
+<div id="wrapper">
+    <div id="first">
+        <button data-toggle="collapse" data-target="#directions_panel">More info</button>
+
+        <div id="directions_panel" style="width:500px;" class="collapse"></div>
+
+    </div>
+    <div id="second">
+        <button data-toggle="collapse" data-target="#demo">Specific info</button>
+
+        <div id="demo" style="width:500px;" class="collapse"></div>
+
     </div>
 </div>
-    *@
+
+
 
 @section scripts{
 
     <!--ENSURE YOU CHANGE TO YOUR OWN API KEY HERE !!! -->
-    <script 
-            src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBxb_cf_iJ3-24dffKVrlAfwGEZjTCSkGI&" 
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBxb_cf_iJ3-24dffKVrlAfwGEZjTCSkGI&"
             type="text/javascript"
-            charset="utf-8"
-            >
+            charset="utf-8">
     </script>
 
     <!-- code for example 1 -->
@@ -64,14 +78,14 @@
             mapTypeId: 'roadmap'
         });
 
-        
+
 
         google.maps.event.addDomListener(window, 'load', function () {
             directionsDisplay = new google.maps.DirectionsRenderer({ 'draggable': true });
             GetRoute();
         });
 
-        //directionsDisplay.setPanel(document.getElementById('demo')); 
+
 
         function GetRoute() {
             directionsDisplay.setMap(map);
@@ -97,19 +111,49 @@
             };
 
             directionsService.route(request, function (response, status) {
-                console.log(status);
                 if (status == google.maps.DirectionsStatus.OK) {
-
-                    response.routes[0].legs.forEach(function (item, index) {
-                    });
-
                     directionsDisplay.setDirections(response);
+                    var route = response.routes[0];
+                    var summaryPanel = document.getElementById("directions_panel");
+                    summaryPanel.innerHTML = "";
+                    // For each route, display summary information.
+                    for (var i = 0; i < route.legs.length; i++) {
+                        var routeSegment = i + 1;
+                        summaryPanel.innerHTML += "<b>Route Segment: " + routeSegment + "</b><br />";
+                        summaryPanel.innerHTML += route.legs[i].start_address + " to ";
+                        summaryPanel.innerHTML += route.legs[i].end_address + "<br />";
+                        summaryPanel.innerHTML += route.legs[i].duration.text + "<br/>";
+                        summaryPanel.innerHTML += route.legs[i].distance.text + "<br /><br />";
+                    }
+                    computeTotalDistance(response);
+                } else {
+                    alert("directions response " + status);
                 }
-                else {
-                    //handle error
-                }
-            })
-        };
+                directionsDisplay.setPanel(document.getElementById('demo'));
+            });
+        }
+
+        function computeTotalDistance(result) {
+            var totalDist = 0;
+            var totalTime = 0;
+            var totalMin = 0;
+            var totalHour = 0;
+
+            var myroute = result.routes[0];
+            for (i = 0; i < myroute.legs.length; i++) {
+                totalDist += myroute.legs[i].distance.value;
+                totalTime += myroute.legs[i].duration.value;
+            }
+            totalDist = totalDist / 1000.
+
+            var totalHour    = Math.floor(totalTime / (60*60));
+                    totalTime -= totalHour   * (60*60);
+            var totalMin  = Math.floor(totalTime / (60));
+                    totalTime -= totalMin * (60);
+
+            document.getElementById("directions_panel").innerHTML += "total distance is: " + totalDist.toFixed(0) + " km<br>total time is: " + totalHour + " h " + totalMin + " min ";
+        }
+
 
     </script>
     <!-- end code for example 1 -->
