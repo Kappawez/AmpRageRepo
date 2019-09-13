@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AmpRageRepo.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 using AmpRageRepo.Controllers;
 
 namespace AmpRageRepo
@@ -34,9 +36,9 @@ namespace AmpRageRepo
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+
             var connection = @"Server=tcp:amprage.database.windows.net,1433;Initial Catalog=AmpRageDB;Persist Security Info=False;User ID=Shadowacademy;Password=PatrikWiksten2019;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-            var secretController = new SecretController();
-            services.AddSingleton(secretController);
+            services.AddSingleton(new SecretController());
             services.AddDbContext<AmpContext>(options => options.UseSqlServer(connection));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
@@ -54,7 +56,19 @@ namespace AmpRageRepo
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(new CultureInfo("en-GB")),
+                SupportedCultures = new List<CultureInfo>
+              {
+                  new CultureInfo("en-GB")
+              }
+              ,
+                SupportedUICultures = new List<CultureInfo>
+              {
+                  new CultureInfo("GB")
+              }
+            });
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
