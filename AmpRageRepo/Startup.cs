@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using AmpRageRepo.Models;
 using Microsoft.EntityFrameworkCore;
+using AmpRageRepo.Controllers;
 
 namespace AmpRageRepo
 {
@@ -34,6 +35,8 @@ namespace AmpRageRepo
             });
 
             var connection = @"Server=tcp:amprage.database.windows.net,1433;Initial Catalog=AmpRageDB;Persist Security Info=False;User ID=Shadowacademy;Password=PatrikWiksten2019;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            var secretController = new SecretController();
+            services.AddSingleton(secretController);
             services.AddDbContext<AmpContext>(options => options.UseSqlServer(connection));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
