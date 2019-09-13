@@ -13,8 +13,8 @@ namespace AmpRageRepo.Controllers
         public async Task<string> GetGoogleApiKey()
         {
             string message = null;
-            int retries = 0;
-            bool retry = false;
+            //int retries = 0;
+            //bool retry = false;
             try
             {
                 /* The next four lines of code show you how to use AppAuthentication library to fetch secrets from your key vault */
