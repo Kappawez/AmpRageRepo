@@ -11,6 +11,16 @@
         <p hidden id="origin">"@Model.Origin"</p>
         <p hidden id="dest">"@Model.Destination"</p>
 
+        <div id="loopDiv">
+            <ul id="list">
+            </ul>
+        </div>
+
+        @foreach (var item in Model.WayPointStrings)
+        {
+            @Html.Raw("Hej");
+        }
+
         <div id="dvMap" style="min-height:500px"></div>
     </div>
 </div>

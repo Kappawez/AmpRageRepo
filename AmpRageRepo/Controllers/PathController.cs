@@ -12,8 +12,6 @@ namespace AmpRageRepo.Controllers
     public class PathController : Controller
     {
         public static string apiKey = "AIzaSyBxb_cf_iJ3-24dffKVrlAfwGEZjTCSkGI";
-        public Leg lastOkStep = null;
-        public int wps = 0;
 
         public IActionResult CreatePath()
         {
@@ -27,8 +25,8 @@ namespace AmpRageRepo.Controllers
                 //var car = await LicensePlateSearcher.FindPlate(path.LicensePlate);
                 path.RangeKm = 100;
                 path.MaxRangeM = (path.RangeKm * 1000);    //km -> m
-                path.MinRangeM = (path.RangeKm * 1000 * 0.2);
-                path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM;
+                path.MinRangeM = (path.RangeKm * 1000 * 0.2); //20% of MaxRangeM
+                path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM; //diff
                 path.TotalRangeM = path.CurrentRangeM = path.MaxRangeM;
             }
 
