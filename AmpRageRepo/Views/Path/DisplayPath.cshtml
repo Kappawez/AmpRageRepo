@@ -46,6 +46,11 @@
         var locations = [];
         var directionsDisplay;
         var directionsService = new google.maps.DirectionsService();
+        var envdev = "AIzaSyBxb_cf_iJ3-24dffKVrlAfwGEZjTCSkGI&";
+
+        <env>
+            console.log(envdev);
+        </env>
 
         // initialise the location of the map on Chichester in England (ref lat and lng)
         var map = new google.maps.Map(document.getElementById('dvMap'), {
