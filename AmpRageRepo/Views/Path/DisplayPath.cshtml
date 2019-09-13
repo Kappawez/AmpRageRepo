@@ -68,10 +68,15 @@
 
             var wayPoints = [];
 
-            @foreach (var item in Model.WayPoints)
+            @foreach (var item in Model.WayPointStrings)
             {
+                @:console.log("@item");
                 @:wayPoints.push({ location: "@item", stopover: true });
             }
+
+            //wayPoints.forEach(function (element) {
+            //    console.log(element);
+            //});
 
             var request = {
                 origin: document.getElementById('origin').textContent,

@@ -22,14 +22,14 @@ namespace AmpRageRepo.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePath(Path path)
         {
-            if (path.Range == 0)
+            if (path.RangeKm == 0)
             {
                 //var car = await LicensePlateSearcher.FindPlate(path.LicensePlate);
-                path.Range = 100;
-                path.MaxRange = (path.Range * 1000);    //km -> m
-                path.MinRange = (path.Range * 1000 * 0.2);
-                path.EffectiveRange = path.MaxRange;
-                path.totalDist = path.MaxRange;
+                path.RangeKm = 100;
+                path.MaxRangeM = (path.RangeKm * 1000);    //km -> m
+                path.MinRangeM = (path.RangeKm * 1000 * 0.2);
+                path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM;
+                path.TotalRangeM = path.CurrentRangeM = path.MaxRangeM;
             }
 
             var direction = await GetDirection(path);
@@ -40,6 +40,8 @@ namespace AmpRageRepo.Controllers
 
                 while (await EvaluateDirection(direction, path) == false)
                 {
+                    //A path could have more than 20 waypoints
+                    //Temp solution to prevent infinite loops
                     if (x > 20)
                         throw new Exception();
 
@@ -53,6 +55,11 @@ namespace AmpRageRepo.Controllers
                 throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
             }
 
+            foreach (var item in path.WayPoints)
+            {
+                path.WayPointStrings.Add(item.Address);
+            }
+            path.Direction = direction;
 
             return RedirectToAction(nameof(DisplayPath), path);
         }
@@ -103,10 +110,12 @@ namespace AmpRageRepo.Controllers
 
             for (int i = 0; i < path.WayPoints.Count; i++)
             {
+                string coord = path.WayPoints[i].Address;
+
                 if (i == 0)
-                    request += $"&waypoints={path.WayPoints[i]}";
+                    request += $"&waypoints={coord}";
                 if (i > 0)
-                    request += $"|{path.WayPoints[i]}";
+                    request += $"|{coord}";
             }
 
             request += $"&key={apiKey}";
@@ -117,9 +126,6 @@ namespace AmpRageRepo.Controllers
         {
             try
             {
-                double totalDistance = 0; //total distance for direction
-                double lastOkDistance = 0; //last distance that was less than range
-                double currentStepValue = 0; //distance for one step
                 List<Step> stepList = new List<Step>();
 
                 foreach (var route in direction.routes)
@@ -130,23 +136,12 @@ namespace AmpRageRepo.Controllers
                         {
                             stepList.Add(step);
 
-                            currentStepValue = step.distance.value;
-                            totalDistance += currentStepValue;
+                            path.CurrentRangeM -= step.distance.value;
 
-                            path.EffectiveRange -= currentStepValue;
-
-                            if (path.EffectiveRange <= 0)
+                            if (path.CurrentRangeM <= 0)
                             {
-                                path.totalDist += path.MaxRange;
-                                path.EffectiveRange = path.totalDist;
-
-                                string address = await ChooseChargingStation(stepList, path);
-
-                                path.WayPoints.Add(address);
-
-                                return false;
+                                return await ChooseChargingStation(stepList, path);
                             }
-                            lastOkDistance += currentStepValue;
                         }
                     }
                 }
@@ -157,22 +152,34 @@ namespace AmpRageRepo.Controllers
             }
             return true;
         }
-        private async Task<string> ChooseChargingStation(List<Step> steps, Path path)
+        private async Task<bool> ChooseChargingStation(List<Step> steps, Path path)
         {
+            try
+            {
+                //TODO get a list of coordEntity
+                var coordEntity = await GetChargingStationLocation(steps, path);
 
-            //TODO get a list of coordEntity
-            var coordEntity = await GetChargingStationLocation(steps, path);
+                //TODO get a list of chargintStation for each coordEntity
+                //TODO choose chargintStation based on other things than shortest route (timeToCharge etc)
+                var chargingStation = await GetChargingStationInfo(coordEntity);
 
-            //TODO get a list of chargintStation for each coordEntity
-            //TODO choose chargintStation based on other things than shortest route (timeToCharge etc)
-            var chargingStation = await GetChargingStationInfo(coordEntity);
+                path.WayPoints.Add(coordEntity);
+                path.ChargingStations.Add(chargingStation);
 
-            //TODO add timeToCharge to traveltime
-            var timeToCharge = ChargingCalculator(35.8, chargingStation);
+                //TODO add timeToCharge to traveltime
+                var timeToCharge = ChargingCalculator(35.8, chargingStation);
 
-            //Temp fins one charging station and adds a million range
-            //TODO logic for charging car
-            return coordEntity.Address;
+                //Temp fins one charging station and adds a million range
+                //TODO logic for charging car
+                path.TotalRangeM += path.MaxRangeM;
+                path.CurrentRangeM = path.TotalRangeM;
+
+                return false;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
         private int ChargingCalculator(double carCapacity, ChargingStationRootObject chargingStation)
         {
@@ -306,7 +313,7 @@ namespace AmpRageRepo.Controllers
 
             int loop = 0;
 
-            var value = path.MaxRange;
+            var value = path.MaxRangeM;
 
             for (int i = 1; i < coords.Count; i++)
             {

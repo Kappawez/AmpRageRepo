@@ -10,8 +10,9 @@ namespace AmpRageRepo.Models
     {
         public Path()
         {
-            WayPoints = new List<string>();
-            step = new Step();
+            WayPoints = new List<CoordinateEntity>();
+            ChargingStations = new List<ChargingStationRootObject>();
+            WayPointStrings = new List<string>();
         }
 
         [Required(ErrorMessage = "Orgin is required.")]
@@ -22,20 +23,22 @@ namespace AmpRageRepo.Models
         [Required(ErrorMessage = "License Plate is required.")]
         [StringLength(6, ErrorMessage = "License Plate must be 6 chars")]
         public string LicensePlate { get; set; }
-        public int Range { get; set; } //km
-        public double EffectiveRange { get; set; } //km -> m -> x0.8
-        public int LegCount { get; set; }
-        public double totalDist;
-        public Step step;
 
-        public double MinRange { get; set; }
-        public double MaxRange { get; set; }
+        public int RangeKm { get; set; } //km
+        public double EffectiveRangeM { get; set; } //MaxRangeM - MinRangeM
+        public double TotalRangeM { get; set; } //Total distance of path
+        public double CurrentRangeM { get; set; } //TotalMaxRangeM - traveled so far
+        public double MinRangeM { get; set; } //MaxRangeM * 0.2
+        public double MaxRangeM { get; set; } //RangeKm -> km -> m
 
-        public List<string> WayPoints { get; set; }
+        public DirectionRootObject Direction { get; set; }
+        public List<CoordinateEntity> WayPoints { get; set; }
+        public List<ChargingStationRootObject> ChargingStations { get; set; }
+        public List<string> WayPointStrings { get; set; }
 
         public void ChangeRange(int aRange)
         {
-            this.Range = aRange;
+            this.RangeKm = aRange;
         }
     }
 }
