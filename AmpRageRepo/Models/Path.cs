@@ -9,9 +9,9 @@ namespace AmpRageRepo.Models
 {
     public class Path
     {
-        public Path(SecretController secret)
+        public Path(/*SecretController secret*/)
         {
-            SecretController = secret;
+            //SecretController = secret;
             WayPoints = new List<CoordinateEntity>();
             ChargingStations = new List<ChargingStationRootObject>();
             WayPointStrings = new List<string>();
@@ -33,7 +33,7 @@ namespace AmpRageRepo.Models
         public double MinRangeM { get; set; } //MaxRangeM * 0.2
         public double MaxRangeM { get; set; } //RangeKm -> km -> m
 
-        public SecretController SecretController { get; private set; }
+        //public SecretController SecretController { get; private set; }
         public DirectionRootObject Direction { get; set; }
         public List<CoordinateEntity> WayPoints { get; set; }
         public List<ChargingStationRootObject> ChargingStations { get; set; }

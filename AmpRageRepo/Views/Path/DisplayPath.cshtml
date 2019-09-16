@@ -11,47 +11,31 @@
         <p hidden id="origin">"@Model.Origin"</p>
         <p hidden id="dest">"@Model.Destination"</p>
 
-        <div id="loopDiv">
-            <ul id="list">
-            </ul>
-        </div>
-
-        @foreach (var item in Model.WayPointStrings)
-        {
-            @Html.Raw("Hej");
-        }
+        <ul hidden id="wps">
+            @foreach (var item in Model.WayPointStrings)
+            {
+                <li>
+                    @Html.Raw(item)
+                </li>
+            }
+        </ul>
 
         <div id="dvMap" style="min-height:500px"></div>
     </div>
 </div>
 
-@*<div class="info">
-    <div class="col-md-12">
-
-        <button data-toggle="collapse" data-target="#demo">Collapsible</button>
-
-        <div id="demo" class="collapse">
-            @foreach (var item in Model.WayPoints)
-            {
-                <td>@item.Length</td>
-            }@
-        </div>
-    </div>
-</div>
-    *@
 
 @section scripts{
 
     <!--ENSURE YOU CHANGE TO YOUR OWN API KEY HERE !!! -->
-    <script 
-            src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBxb_cf_iJ3-24dffKVrlAfwGEZjTCSkGI&" 
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBhIgKBChJZ9HwlAS5FdKkMFKuneDc8RjY"
             type="text/javascript"
-            charset="utf-8"
-            >
+            charset="utf-8">
     </script>
 
     <!-- code for example 1 -->
-    <script>
+    <script charset="utf-8">
+
         var source, destination;
         var locations = [];
         var directionsDisplay;
@@ -64,29 +48,34 @@
             mapTypeId: 'roadmap'
         });
 
-        
+
 
         google.maps.event.addDomListener(window, 'load', function () {
             directionsDisplay = new google.maps.DirectionsRenderer({ 'draggable': true });
             GetRoute();
         });
 
-        //directionsDisplay.setPanel(document.getElementById('demo')); 
+        //directionsDisplay.setPanel(document.getElementById('demo'));
 
         function GetRoute() {
+
             directionsDisplay.setMap(map);
+
+            var ul = document.getElementById("wps");
+            var items = ul.getElementsByTagName("li");
 
             var wayPoints = [];
 
-            @foreach (var item in Model.WayPointStrings)
+            @*@foreach (var item in Model.WayPointStrings)
             {
-                @:console.log("@item");
                 @:wayPoints.push({ location: "@item", stopover: true });
-            }
+            }*@
 
-            //wayPoints.forEach(function (element) {
-            //    console.log(element);
-            //});
+            for (var i = 0; i < items.length; ++i) {
+                var string = items[i].textContent;
+                console.log(string);
+                wayPoints.push({ location: string, stopover: true });
+            }
 
             var request = {
                 origin: document.getElementById('origin').textContent,
