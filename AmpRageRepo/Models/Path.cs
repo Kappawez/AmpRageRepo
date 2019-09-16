@@ -32,6 +32,8 @@ namespace AmpRageRepo.Models
         public double MinRangeM { get; set; } //MaxRangeM * 0.2
         public double MaxRangeM { get; set; } //RangeKm -> km -> m
 
+        public string temp;
+
         //public SecretController SecretController { get; private set; }
         public DirectionRootObject Direction { get; set; }
         public List<CoordinateEntity> WayPoints { get; set; }

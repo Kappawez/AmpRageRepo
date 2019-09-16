@@ -2,14 +2,16 @@
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.Services.AppAuthentication;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AmpRageRepo.Controllers
 {
     public class SecretController
     {
+        //public async Task<string> GetTestSecret()
+        //{
+        //    return "GoogleApiKey190916";
+        //}
         public async Task<string> GetSecret(string input)
         {
             string message = null;
