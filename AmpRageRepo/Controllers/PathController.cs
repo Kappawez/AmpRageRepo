@@ -11,15 +11,15 @@ namespace AmpRageRepo.Controllers
 {
     public class PathController : Controller
     {
-        public PathController(SecretController secret)
-        {
-            Sync(secret);
-        }
-        private async void Sync(SecretController secret)
-        {
-            apiKey = await secret.GetGoogleApiKey();
-        }
-        public static string apiKey = "FAILLLLL";
+        //public PathController(SecretController secret)
+        //{
+        //    Sync(secret);
+        //}
+        //private async void Sync(SecretController secret)
+        //{
+        //    apiKey = await secret.GetGoogleApiKey();
+        //}
+        public static string apiKey = "AIzaSyBhIgKBChJZ9HwlAS5FdKkMFKuneDc8RjY";
 
         public IActionResult CreatePath()
         {
@@ -31,14 +31,14 @@ namespace AmpRageRepo.Controllers
             if (path.RangeKm == 0)
             {
                 //var car = await LicensePlateSearcher.FindPlate(path.LicensePlate);
-                path.RangeKm = 100;
+                path.RangeKm = 350;
                 path.MaxRangeM = (path.RangeKm * 1000);    //km -> m
                 path.MinRangeM = (path.RangeKm * 1000 * 0.2); //20% of MaxRangeM
                 path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM; //diff
-                path.TotalRangeM = path.CurrentRangeM = path.MaxRangeM;
+                path.CurrentRangeM = 50 * 1000;
             }
 
-            var direction = await GetDirection(path);
+            var direction = await Google_GetDirection(path);
 
             try
             {
@@ -48,23 +48,22 @@ namespace AmpRageRepo.Controllers
                 {
                     //A path could have more than 20 waypoints
                     //Temp solution to prevent infinite loops
-                    if (x > 20)
+                    if (x >= 9)
                         throw new Exception();
 
                     x++;
-                    direction = await GetDirection(path);
+                    direction = await Google_GetDirection(path);
                 }
             }
             catch
             {
-
                 throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
             }
 
-            foreach (var item in path.WayPoints)
-            {
-                path.WayPointStrings.Add(item.Address);
-            }
+            //foreach (var item in path.WayPoints)
+            //{
+            //    path.WayPointStrings.Add(item.Address);
+            //}
             path.Direction = direction;
 
             return RedirectToAction(nameof(DisplayPath), path);
@@ -73,7 +72,7 @@ namespace AmpRageRepo.Controllers
         {
             return View(path);
         }
-        private async Task<DirectionRootObject> GetDirection(Path path)
+        private async Task<DirectionRootObject> Google_GetDirection(Path path)
         {
             DirectionRootObject rootObject = null;
 
@@ -116,7 +115,7 @@ namespace AmpRageRepo.Controllers
 
             for (int i = 0; i < path.WayPoints.Count; i++)
             {
-                string coord = path.WayPoints[i].Address;
+                string coord = path.WayPoints[i].Latitude + "," + path.WayPoints[i].Longitude;
 
                 if (i == 0)
                     request += $"&waypoints={coord}";
@@ -134,21 +133,20 @@ namespace AmpRageRepo.Controllers
             {
                 List<Step> stepList = new List<Step>();
 
-                foreach (var route in direction.routes)
+                var currentRoute = direction.routes[direction.routes.Count - 1];
+                var currentLeg = currentRoute.legs[currentRoute.legs.Count - 1];
+
+                foreach (var step in currentLeg.steps)
                 {
-                    foreach (var leg in route.legs)
+                    stepList.Add(step);
+
+                    if ((path.CurrentRangeM - step.distance.value) <= 0)
                     {
-                        foreach (var step in leg.steps)
-                        {
-                            stepList.Add(step);
-
-                            path.CurrentRangeM -= step.distance.value;
-
-                            if (path.CurrentRangeM <= 0)
-                            {
-                                return await ChooseChargingStation(stepList, path);
-                            }
-                        }
+                        return await FindChargingStation(stepList, path);
+                    }
+                    else
+                    {
+                        path.CurrentRangeM -= step.distance.value;
                     }
                 }
             }
@@ -158,7 +156,7 @@ namespace AmpRageRepo.Controllers
             }
             return true;
         }
-        private async Task<bool> ChooseChargingStation(List<Step> steps, Path path)
+        private async Task<bool> FindChargingStation(List<Step> steps, Path path)
         {
             try
             {
@@ -167,18 +165,18 @@ namespace AmpRageRepo.Controllers
 
                 //TODO get a list of chargintStation for each coordEntity
                 //TODO choose chargintStation based on other things than shortest route (timeToCharge etc)
-                var chargingStation = await GetChargingStationInfo(coordEntity);
+                var chargingStation = await OpenChargeMap_GetChargingStationInfo(coordEntity);
 
                 path.WayPoints.Add(coordEntity);
+                path.WayPointStrings.Add(coordEntity.Latitude + "," + coordEntity.Longitude);
                 path.ChargingStations.Add(chargingStation);
 
                 //TODO add timeToCharge to traveltime
-                var timeToCharge = ChargingCalculator(35.8, chargingStation);
+                //var timeToCharge = ChargingCalculator(35.8, chargingStation);
 
-                //Temp fins one charging station and adds a million range
                 //TODO logic for charging car
-                path.TotalRangeM += path.MaxRangeM;
-                path.CurrentRangeM = path.TotalRangeM;
+                //path.TotalRangeM += path.MaxRangeM;
+                path.CurrentRangeM = path.EffectiveRangeM;
 
                 return false;
             }
@@ -187,6 +185,7 @@ namespace AmpRageRepo.Controllers
                 throw new Exception(e.Message);
             }
         }
+
         private int ChargingCalculator(double carCapacity, ChargingStationRootObject chargingStation)
         {
             double carWatt = carCapacity * 60 * 60; //Wh -> W
@@ -194,7 +193,7 @@ namespace AmpRageRepo.Controllers
 
             return (int)Math.Round(carWatt / stationWatt);
         }
-        private async Task<ChargingStationRootObject> GetChargingStationInfo(CoordinateEntity coordEntity)
+        private async Task<ChargingStationRootObject> OpenChargeMap_GetChargingStationInfo(CoordinateEntity coordEntity)
         {
             //documentation https://openchargemap.org/site/develop/api
 
@@ -234,7 +233,7 @@ namespace AmpRageRepo.Controllers
         {
             //documentation: https://developers.google.com/places/web-service/search
             //Magic numbers to not do too many api requests
-            int maxSearch = 10;
+            int maxSearch = 9;
             int currentSearch = 0;
 
             try
@@ -245,20 +244,29 @@ namespace AmpRageRepo.Controllers
 
                     var coordEntity = Decode(step.polyline.points).ToList();
 
-                    if (currentSearch > maxSearch)
+                    if (currentSearch >= maxSearch)
                         throw new Exception("Too many requests");
 
                     var maxCoord = GetMaxCoord(coordEntity, path);
+                    //string[] motherf = maxCoord.Split(",");
 
                     currentSearch++;
-                    var search = await SearchForChargingStations(maxCoord);
+                    var search = await Google_SearchForChargingStations(maxCoord);
+
+                    //return new CoordinateEntity
+                    //{
+                    //    Address = result.formatted_address,
+                    //    Latitude = double.Parse(motherf[0]),
+                    //    Longitude = double.Parse(motherf[1])
+                    //};
 
                     if (search.results != null && search.results.Count > 0)
                     {
                         //Choose the first result
                         //TODO return a list
                         var result = search.results[0];
-                        return new CoordinateEntity {
+                        return new CoordinateEntity
+                        {
                             Address = result.formatted_address,
                             Latitude = Math.Round(result.geometry.location.lat, 6),
                             Longitude = Math.Round(result.geometry.location.lng, 6)
@@ -273,7 +281,7 @@ namespace AmpRageRepo.Controllers
 
             return null;
         }
-        private async Task<TextSearchRootObject> SearchForChargingStations(string coord)
+        private async Task<TextSearchRootObject> Google_SearchForChargingStations(string coord)
         {
             TextSearchRootObject rootObject = null;
 
@@ -282,7 +290,7 @@ namespace AmpRageRepo.Controllers
                 client.BaseAddress = new Uri("Https://maps.googleapis.com/maps/api/place/textsearch/");
 
                 var responseTask = client.GetAsync(
-                    $"json?query=charging+station&location={coord}&radius=5000&key={apiKey}"
+                    $"json?query=charging+station&location={coord}&radius=10000&key={apiKey}"
                     );
 
                 responseTask.Wait();
@@ -317,9 +325,9 @@ namespace AmpRageRepo.Controllers
             double currentLat;
             double currentLng;
 
-            int loop = 0;
+            var value = path.CurrentRangeM;
 
-            var value = path.MaxRangeM;
+            int loop = 0;
 
             for (int i = 1; i < coords.Count; i++)
             {
@@ -336,15 +344,16 @@ namespace AmpRageRepo.Controllers
                 var amount = DistanceBetweenCoords(lastLat, lastLng, currentLat, currentLng, 'M');
 
                 value -= amount;
+                //path.TotalRangeM += amount;
 
                 if (value <= 0)
-                    return currentLat + "," + currentLng;
+                    return lastLat + "," + lastLng;
 
                 lastLat = currentLat;
                 lastLng = currentLng;
             }
 
-            return null;
+            return lastLat + "," + lastLng;
         }
 
         #region Decode
