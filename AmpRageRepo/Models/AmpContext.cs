@@ -23,6 +23,7 @@ namespace AmpRageRepo.Models
         public virtual DbSet<Car> Cars { get; set; }
         public virtual DbSet<RootObject> RootObjects { get; set; }
         public virtual DbSet<SearchedCar> SearchedCars { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
