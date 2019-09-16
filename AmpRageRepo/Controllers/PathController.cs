@@ -11,15 +11,15 @@ namespace AmpRageRepo.Controllers
 {
     public class PathController : Controller
     {
-        public PathController(SecretController secret)
-        {
-            Sync(secret);
-        }
-        private async void Sync(SecretController secret)
-        {
-            apiKey = await secret.GetGoogleApiKey();
-        }
-        public static string apiKey = "FAILLLLL";
+        //public PathController(SecretController secret)
+        //{
+        //    Sync(secret);
+        //}
+        //private async void Sync(SecretController secret)
+        //{
+        //    apiKey = await secret.GetGoogleApiKey();
+        //}
+        public static string apiKey = "AIzaSyCAg3OuaXxRiMXbM1nE_gHaVcjg6brGAfo";
 
         public IActionResult CreatePath()
         {
