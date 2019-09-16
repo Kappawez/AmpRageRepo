@@ -30,13 +30,6 @@ namespace AmpRageRepo.Controllers
             return View();
         }
 
-        public async Task<IActionResult> ViewCarInfo([Bind("LicensePlate")]Car inputCar) //Search by regnumber and show the result page
-        {
-            //var car = new Car();
-            var car = await LicensePlateSearcher.FindPlate(inputCar.LicensePlate);
-            return RedirectToAction(nameof(Details), car);
-        }
-
         // GET: Cars/Details/5
         public async Task<IActionResult> Details(int? id)
         {
