@@ -9,9 +9,8 @@ namespace AmpRageRepo.Models
 {
     public class Path
     {
-        public Path(/*SecretController secret*/)
+        public Path()
         {
-            //SecretController = secret;
             WayPoints = new List<CoordinateEntity>();
             ChargingStations = new List<ChargingStationRootObject>();
             WayPointStrings = new List<string>();
