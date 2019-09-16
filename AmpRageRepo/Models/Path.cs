@@ -11,9 +11,8 @@ namespace AmpRageRepo.Models
 {
     public class Path
     {
-        public Path(/*SecretController secret*/)
+        public Path()
         {
-            //SecretController = secret;
             WayPoints = new List<CoordinateEntity>();
             ChargingStations = new List<ChargingStationRootObject>();
             WayPointStrings = new List<string>();
@@ -38,6 +37,8 @@ namespace AmpRageRepo.Models
         public IEnumerable<SelectListItem> AllCarBrands { get; set; }
         public IEnumerable<SelectListItem> AllCarModels { get; set; }
 
+
+        public string temp;
 
         //public SecretController SecretController { get; private set; }
         public DirectionRootObject Direction { get; set; }
