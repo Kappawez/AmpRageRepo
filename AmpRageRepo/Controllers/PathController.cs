@@ -13,12 +13,13 @@ namespace AmpRageRepo.Controllers
     {
         public PathController(SecretController secret)
         {
-            Sync(secret);
+            apiKey = secret.GetSecret("GoogleApiKey190916").Result;
+            //Sync(secret);
         }
-        private async void Sync(SecretController secret)
-        {
-            apiKey = await secret.GetSecret("GoogleApiKey190916");
-        }
+        //private async void Sync(SecretController secret)
+        //{
+        //    apiKey = await secret.GetSecret("GoogleApiKey190916");
+        //}
 
         public static string apiKey = "FAIIIILLLLLLLLLLL";
 
