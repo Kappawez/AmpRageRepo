@@ -60,10 +60,6 @@ namespace AmpRageRepo.Controllers
                 throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
             }
 
-            //foreach (var item in path.WayPoints)
-            //{
-            //    path.WayPointStrings.Add(item.Address);
-            //}
             path.Direction = direction;
 
             return RedirectToAction(nameof(DisplayPath), path);
@@ -101,7 +97,7 @@ namespace AmpRageRepo.Controllers
                     }
                 }
             }
-            //await EvaluateDirection(rootObject, path);
+
             return rootObject;
         }
         private string GetRequestString(Path path)
@@ -154,6 +150,7 @@ namespace AmpRageRepo.Controllers
             {
                 throw new Exception(e.Message);
             }
+
             return true;
         }
         private async Task<bool> FindChargingStation(List<Step> steps, Path path)
