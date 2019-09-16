@@ -102,3 +102,19 @@ body {
     margin-bottom: 15px;
 }
 
+#wrapper {
+    width: 500px;
+    
+    overflow: auto;
+}
+
+#first {
+    float: left;
+    width: 100px;
+   
+}
+
+#second {
+    
+    /*margin: 0 0 0 302px;*/
+}
