@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 using AmpRageRepo.Controllers;
 
 namespace AmpRageRepo.Models
@@ -21,17 +23,21 @@ namespace AmpRageRepo.Models
         public string Origin { get; set; }
         [Required(ErrorMessage = "Destination is required.")]
         public string Destination { get; set; }
-        [Display(Name = "License Plate")]
-        [Required(ErrorMessage = "License Plate is required.")]
-        [StringLength(6, ErrorMessage = "License Plate must be 6 chars")]
-        public string LicensePlate { get; set; }
+        public string CarBrand { get; set; }
+        public string CarMake { get; set; }
+        public Car Car { get; set; }
 
         public int RangeKm { get; set; } //km
         public double EffectiveRangeM { get; set; } //MaxRangeM - MinRangeM
         public double TotalRangeM { get; set; } //Total distance of path
+        [Display(Name ="Current Range in %")]
+        [Required(ErrorMessage = "Current Range is required.")]
         public double CurrentRangeM { get; set; } //TotalMaxRangeM - traveled so far
         public double MinRangeM { get; set; } //MaxRangeM * 0.2
         public double MaxRangeM { get; set; } //RangeKm -> km -> m
+        public IEnumerable<SelectListItem> AllCarBrands { get; set; }
+        public IEnumerable<SelectListItem> AllCarModels { get; set; }
+
 
         //public SecretController SecretController { get; private set; }
         public DirectionRootObject Direction { get; set; }

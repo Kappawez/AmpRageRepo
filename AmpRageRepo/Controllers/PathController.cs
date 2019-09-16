@@ -5,38 +5,59 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using AmpRageRepo.Models;
 using System.Net.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 
 namespace AmpRageRepo.Controllers
 {
     public class PathController : Controller
     {
-        public PathController(SecretController secret)
-        {
-            Sync(secret);
-        }
-        private async void Sync(SecretController secret)
-        {
-            apiKey = await secret.GetGoogleApiKey();
-        }
+        //public PathController(SecretController secret)
+        //{
+        //    Sync(secret);
+        //}
+        //private async void Sync(SecretController secret)
+        //{
+        //    apiKey = await secret.GetGoogleApiKey();
+        //}
 
-        private static string apiKey = "FAIIIILLLLLLLLLLL";
+        private static string apiKey = "AIzaSyBhIgKBChJZ9HwlAS5FdKkMFKuneDc8RjY";
 
         public IActionResult CreatePath()
         {
-            return View();
+            var path = new Path()
+            {
+                AllCarBrands = LicensePlateSearcher.GetAllBrands().Select(x => new SelectListItem
+                {
+                    Text = x,
+                    Value = x.ToString()
+                }),
+                AllCarModels = LicensePlateSearcher.GetAllModels().Select(x => new SelectListItem
+                {
+                    Text = x,
+                    Value = x.ToString()
+                })
+            };
+            return View(path);
         }
         [HttpPost]
+        //public async Task<IActionResult> CreatePath(Path path)
         public async Task<IActionResult> CreatePath(Path path)
         {
             if (path.RangeKm == 0)
             {
-                //var car = await LicensePlateSearcher.FindPlate(path.LicensePlate);
-                path.RangeKm = 350;
+                var car = LicensePlateSearcher.CheckForCarInDatabase(path.CarBrand, path.CarMake);
+                if (car == null)
+                {
+                    path.RangeKm = 350;
+                } else
+                {
+                    path.RangeKm = car.Range;
+                }
                 path.MaxRangeM = (path.RangeKm * 1000);    //km -> m
                 path.MinRangeM = (path.RangeKm * 1000 * 0.2); //20% of MaxRangeM
-                path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM; //diff
-                path.CurrentRangeM = 50 * 1000;
+                path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM;//diff
+                path.CurrentRangeM = path.MaxRangeM * (path.CurrentRangeM / 100);  //50 * 1000;
             }
 
             var direction = await Google_GetDirection(path);
