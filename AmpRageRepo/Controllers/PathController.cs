@@ -17,10 +17,10 @@ namespace AmpRageRepo.Controllers
         }
         private async void Sync(SecretController secret)
         {
-            apiKey = await secret.GetGoogleApiKey();
+            apiKey = await secret.GetSecret("GoogleApiKey190916");
         }
 
-        private static string apiKey = "FAIIIILLLLLLLLLLL";
+        public static string apiKey = "FAIIIILLLLLLLLLLL";
 
         public IActionResult CreatePath()
         {

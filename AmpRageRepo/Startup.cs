@@ -38,10 +38,10 @@ namespace AmpRageRepo
 
             var secret = new SecretController();
 
-            var connection = @"Server=tcp:amprage.database.windows.net,1433;Initial Catalog=AmpRageDB;Persist Security Info=False;User ID=Shadowacademy;Password=PatrikWiksten2019;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            var dbConnnection = secret.GetSecret("amprageDBKey").Result;
 
             services.AddSingleton(secret);
-            services.AddDbContext<AmpContext>(options => options.UseSqlServer(connection));
+            services.AddDbContext<AmpContext>(options => options.UseSqlServer(dbConnnection));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
