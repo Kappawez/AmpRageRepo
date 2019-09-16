@@ -16,10 +16,10 @@
             </ul>
         </div>
 
-        @foreach (var item in Model.WayPointStrings)
+        @*@foreach (var item in Model.WayPointStrings)
         {
             @Html.Raw("Hej");
-        }
+        }*@
 
         <div id="dvMap" style="min-height:500px"></div>
     </div>
@@ -43,11 +43,11 @@
 @section scripts{
 
     <!--ENSURE YOU CHANGE TO YOUR OWN API KEY HERE !!! -->
-    <script 
-            src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBxb_cf_iJ3-24dffKVrlAfwGEZjTCSkGI&" 
+    <script> 
+            src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBxb_cf_iJ3-24dffKVrlAfwGEZjTCSkGI" 
             type="text/javascript"
             charset="utf-8"
-            >
+            
     </script>
 
     <!-- code for example 1 -->
@@ -58,10 +58,7 @@
         var directionsService = new google.maps.DirectionsService();
         var envdev = "AIzaSyBxb_cf_iJ3-24dffKVrlAfwGEZjTCSkGI&";
 
-        <env>
-            console.log(envdev);
-        </env>
-
+        
         // initialise the location of the map on Chichester in England (ref lat and lng)
         var map = new google.maps.Map(document.getElementById('dvMap'), {
             center: { lat: 62, lng: 17 },
@@ -80,14 +77,14 @@
 
         function GetRoute() {
             directionsDisplay.setMap(map);
-
+            GoogleMap
             var wayPoints = [];
 
-            @foreach (var item in Model.WayPointStrings)
+            @*@foreach (var item in Model.WayPointStrings)
             {
                 @:console.log("@item");
                 @:wayPoints.push({ location: "@item", stopover: true });
-            }
+            }*@
 
             //wayPoints.forEach(function (element) {
             //    console.log(element);
