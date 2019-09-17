@@ -1,0 +1,16 @@
+﻿@model AmpRageRepo.Models.TestVault
+
+@{
+    ViewData["Title"] = "Test";
+}
+
+<h1>Test</h1>
+
+<div>
+    <h4>@Model.test1</h4>
+    <h4>@Model.test2</h4>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    <a asp-action="Index">Back to List</a>
+</div>

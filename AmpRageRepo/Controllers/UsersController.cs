@@ -5,32 +5,26 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using AmpRageRepo;
 using AmpRageRepo.Models;
 
 namespace AmpRageRepo.Controllers
 {
-    public class CarsController : Controller
+    public class UsersController : Controller
     {
         private readonly AmpContext _context;
 
-        public CarsController(AmpContext context)
+        public UsersController(AmpContext context)
         {
             _context = context;
         }
 
-        // GET: Cars
+        // GET: Users
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Cars.ToListAsync());
+            return View(await _context.Users.ToListAsync());
         }
 
-        public IActionResult SearchByReg() //View searchbox page
-        {
-            return View();
-        }
-
-        // GET: Cars/Details/5
+        // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -38,39 +32,48 @@ namespace AmpRageRepo.Controllers
                 return NotFound();
             }
 
-            var car = await _context.Cars
+            var user = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (car == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return View(car);
+            return View(user);
         }
 
-        // GET: Cars/Create
+        // GET: Users/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Cars/Create
+        // POST: Users/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,LicensePlate,Brand,Make,Capacity,ZeroToHundred,TopSpeed,Range,Efficiency,Fastcharge")] Car car)
+        public async Task<IActionResult> Create(UserViewModel userViewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(car);
+                var user = new User
+                {
+                    Name = userViewModel.Name,
+                    Phone = userViewModel.Phone,
+                    Email = userViewModel.Email,
+                    Password = userViewModel.Password
+                };
+
+                _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(car);
+
+            return View();
         }
 
-        // GET: Cars/Edit/5
+        // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -78,22 +81,22 @@ namespace AmpRageRepo.Controllers
                 return NotFound();
             }
 
-            var car = await _context.Cars.FindAsync(id);
-            if (car == null)
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
             {
                 return NotFound();
             }
-            return View(car);
+            return View(user);
         }
 
-        // POST: Cars/Edit/5
+        // POST: Users/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,LicensePlate,Brand,Make,Capacity,ZeroToHundred,TopSpeed,Range,Efficiency,Fastcharge")] Car car)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Phone,Email,Password")] User user)
         {
-            if (id != car.Id)
+            if (id != user.Id)
             {
                 return NotFound();
             }
@@ -102,12 +105,12 @@ namespace AmpRageRepo.Controllers
             {
                 try
                 {
-                    _context.Update(car);
+                    _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CarExists(car.Id))
+                    if (!UserExists(user.Id))
                     {
                         return NotFound();
                     }
@@ -118,10 +121,10 @@ namespace AmpRageRepo.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(car);
+            return View(user);
         }
 
-        // GET: Cars/Delete/5
+        // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -129,30 +132,30 @@ namespace AmpRageRepo.Controllers
                 return NotFound();
             }
 
-            var car = await _context.Cars
+            var user = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (car == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return View(car);
+            return View(user);
         }
 
-        // POST: Cars/Delete/5
+        // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var car = await _context.Cars.FindAsync(id);
-            _context.Cars.Remove(car);
+            var user = await _context.Users.FindAsync(id);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CarExists(int id)
+        private bool UserExists(int id)
         {
-            return _context.Cars.Any(e => e.Id == id);
+            return _context.Users.Any(e => e.Id == id);
         }
     }
 }

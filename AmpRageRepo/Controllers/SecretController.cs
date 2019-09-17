@@ -2,17 +2,20 @@
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.Services.AppAuthentication;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AmpRageRepo.Controllers
 {
     public class SecretController
     {
-        public async Task<string> GetGoogleApiKey()
+        //public async Task<string> GetTestSecret()
+        //{
+        //    return "GoogleApiKey190916";
+        //}
+        public async Task<string> GetSecret(string input)
         {
             string message = null;
+            string request = $"https://ampragekeyvault.vault.azure.net/secrets/{input}";
             //int retries = 0;
             //bool retry = false;
             try
@@ -20,8 +23,7 @@ namespace AmpRageRepo.Controllers
                 /* The next four lines of code show you how to use AppAuthentication library to fetch secrets from your key vault */
                 AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
                 KeyVaultClient keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-                var secret = await keyVaultClient.GetSecretAsync("https://ampragekeyvault.vault.azure.net/secrets/GoogleApiKey190912")
-                        .ConfigureAwait(false);
+                var secret = await keyVaultClient.GetSecretAsync(request).ConfigureAwait(false);
                 message = secret.Value;
             }
             /* If you have throttling errors see this tutorial https://docs.microsoft.com/azure/key-vault/tutorial-net-create-vault-azure-web-app */
