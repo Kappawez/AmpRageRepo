@@ -17,6 +17,7 @@ namespace AmpRageRepo.Controllers
 
         //    apiKey = secret.GetSecret("GoogleApiKey190916").Result;
         //    //Sync(secret);
+
         //}
         //private async void Sync(SecretController secret)
         //{
