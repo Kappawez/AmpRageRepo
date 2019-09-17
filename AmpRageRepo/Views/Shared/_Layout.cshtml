@@ -24,7 +24,7 @@
 <body>
     <header>
 
-        <nav id="hej" class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
+        <div id="hej" class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
 
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Path" asp-action="CreatePath"><img src="~/fav1.png" width="80" height="80" /></a>
@@ -36,7 +36,7 @@
             <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
-                        <button data-toggle="collapse" data-target="#demo" asp-area="" asp-controller="Home" asp-action="Index">Logga in</button>
+                        <button data-toggle="collapse" data-target="#demo">Logga in</button>
                         <div id="demo" class="collapse">
                             <input type="text" placeholder="Username" name="username">
                             <input type="text" placeholder="Password" name="psw">
@@ -46,7 +46,7 @@
                     </li>
                 </ul>
             </div>
-        </nav>
+        </div>
     </header>
     @*<div class="container">*@
     @*<main role="main" class="pb-3">*@
