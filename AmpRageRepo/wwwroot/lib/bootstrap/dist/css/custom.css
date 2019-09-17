@@ -3,11 +3,9 @@
     
 }
 .nav-link {
-    font-size:25px;
+    font-size: 20px;
     
 }
-
-
 
 body {
     padding: 0;
@@ -15,11 +13,87 @@ body {
     background: teal;
 }
 
+.container {
+    /*display: flex;*/
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    /*padding: 10px;*/
+    grid-gap: 5px;
+    /*margin: 50px;*/
+}
+.container2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+    grid-gap: 5px;
+}
+.full-width {
+    padding: 0px;
+    grid-column: span 2;
+    text-align: center;
+    justify-content: center;
+    font-family: 'Palatino Linotype';
+}
+
+.grid-item {
+    /*flex: 0 0 65%;*/
+    /*float: left;
+    width: 50%;
+    overflow: hidden;*/
+    grid-column: span 1;
+    padding: 30px;
+}
+.grid-item2 {
+    /*flex: 0 0 65%;*/
+    /*float: left;
+    width: 50%;
+    overflow: hidden;*/
+    grid-column: span 1;
+    grid-column: span 2;
+    padding: 0px;
+}
+.grid-item3 {
+    /*flex: 0 0 65%;*/
+    /*float: left;
+    width: 50%;
+    overflow: hidden;*/
+    grid-column: span 3;
+    padding: 30px;
+    background-color:grey;
+}
+
+#second {
+    /*flex: 1;*/
+    /*float: left;*/
+    width: 70%;
+    /*overflow: hidden;*/
+
+    grid-column: span 1;
+    /*padding: 5px;*/
+}
+
+#wrapper2 {
+    width: 500px;
+    
+    overflow: auto;
+}
+
+#first2 {
+    float: left;
+    width: 100px;
+   
+}
+
+#second2 {
+
+margin: 0 0 0 302px;
+}
 
 
 
 /*--- navigation bar ---*/
-.navbar {
+/*.navbar {
     background: #6ab446;
    
 }
@@ -64,17 +138,8 @@ body {
     background-color: teal;
    
 }
-.annat {
-    margin: 0.5em auto;
-    padding: 1em;
-    position: relative;
-}
-.container{
-    color:white;
-}
-.containers{
-    color:red;
-}
+
+
 
 .features {
     margin: 4em auto;
@@ -112,9 +177,18 @@ body {
     float: left;
     width: 100px;
    
-}
+}*/
 
-#second {
+/*#second {
     
-    /*margin: 0 0 0 302px;*/
+    margin: 0 0 0 302px;
+}*/
+
+.navbar-toggler .icon-bar {
+    margin: 7px;
+    display: block;
+    width: 22px;
+    height: 1px;
+    background-color: #cccccc;
+    border-radius: 1px;
 }

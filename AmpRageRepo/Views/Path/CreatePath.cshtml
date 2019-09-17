@@ -4,35 +4,52 @@
     ViewData["Title"] = "CreatePath";
 }
 
-<h1>CreatePath</h1>
 
-<h4>Path</h4>
-<hr />
-<div class="row">
-    <div class="col-md-12">
+<div class="container">
+    <div class="full-width">
+
+    </div>
+    <div class="grid-item">
         <form asp-action="CreatePath">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger" id="first"></div>
+
             <div class="form-group" style="width:400px">
                 <label asp-for="Origin" class="control-label"></label>
-                <input asp-for="Origin" class="form-control" />
+                <input asp-for="Origin" class="form-control" style="width:400px" />
                 <span asp-validation-for="Origin" class="text-danger"></span>
             </div>
+
             <div class="form-group" style="width:400px">
                 <label asp-for="Destination" class="control-label"></label>
-                <input asp-for="Destination" class="form-control" />
+                <input asp-for="Destination" class="form-control" style="width:400px" />
                 <span asp-validation-for="Destination" class="text-danger"></span>
             </div>
+
             <div class="form-group" style="width:400px">
-                <label asp-for="LicensePlate" class="control-label"></label>
-                <input asp-for="LicensePlate" class="form-control" />
-                <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                <p class="control-label">Car brand:</p>
+                <select asp-for="Destination" name="id" class="rounded-pill" style="width:400px"></select>
+            </div>
+            <div class="form-group" style="width:400px">
+                <p class="control-label">Car model:</p>
+                <select asp-for="Destination" name="id" class="rounded-pill" style="width:400px"></select>
+            </div>
+            <div class="form-group" style="width:400px">
+                <p class="control-label">Car model:</p>
+                <select asp-for="Destination" name="id" class="rounded-pill" style="width:400px"></select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Search" class="btn btn-primary" />
+                <input type="submit" onclick="myFunction()" value="Search" class="btn btn-primary" />
+
+
             </div>
         </form>
     </div>
+    <div class="grid-item">
+        <h1>Välkommen till AmpRange</h1>
+        <p>AmpRange är den bästa sidan på marknaden för att på ett så effektivt sätt ta dig från punkt a till b med din fina elbil.</p>
+    </div>
 </div>
+
 
 
 @section scripts{
@@ -46,10 +63,12 @@
             new google.maps.places.SearchBox(document.getElementById('Destination'));
 
         });
+        
 
     </script>
-@{ await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}
+
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
 }
 

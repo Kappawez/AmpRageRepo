@@ -7,6 +7,7 @@
     <link runat="server" rel="shortcut icon" href="~/fav1.png" type="image/x-icon" />
     <link runat="server" rel="icon" href="~/fav1.png" type="image/ico" />
 
+
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     </environment>
@@ -17,55 +18,42 @@
               crossorigin="anonymous"
               integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" />
     </environment>
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/custom.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/custom.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
     <header>
-        <div class="annat"></div>
-        <nav class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
+
+        <nav id="hej" class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
+
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"><img src="~/fav1.png" width="30" height="30"/></a>
+                <a class="navbar-brand" asp-area="" asp-controller="Path" asp-action="CreatePath"><img src="~/fav1.png" width="80" height="80" /></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Map">Map</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="About">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Cars" asp-action="SearchByReg">SearchByReg</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Path" asp-action="CreatePath">CreatePath</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Cars" asp-action="Index">All Cars</a>
-                        </li>
-                    </ul>
-                </div>
+            </div>
+            <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <button data-toggle="collapse" data-target="#demo" asp-area="" asp-controller="Home" asp-action="Index">Logga in</button>
+                        <div id="demo" class="collapse">
+                            <input type="text" placeholder="Username" name="username">
+                            <input type="text" placeholder="Password" name="psw">
+                            <button type="submit">Logga in</button>
+                            <button type="submit">Registrera</button>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+    @*<div class="container">*@
+    @*<main role="main" class="pb-3">*@
+    @RenderBody()
+    @*</main>*@
+    @*</div>*@
 
-    <footer class="border-top footer text-muted footer-dark bg-dark">
-        <div class="container">
-            <p>2019 - AmpRageINC - Nick, Arvid, Jocke och Micke </p>
-        </div>
-    </footer>
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -90,3 +78,4 @@
     @RenderSection("Scripts", required: false)
 </body>
 </html>
+
