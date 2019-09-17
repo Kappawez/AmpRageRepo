@@ -36,12 +36,16 @@ namespace AmpRageRepo
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            var secret = new SecretController();
+            //var secret = new SecretController();
 
-            var Connnection = @"Server=tcp:amprage.database.windows.net,1433;Initial Catalog=AmpRageDB;Persist Security Info=False;User ID=Shadowacademy;Password=PatrikWiksten2019;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
-            services.AddSingleton(secret);
-            services.AddDbContext<AmpContext>(options => options.UseSqlServer(Connnection));
+            //var dbConnnection = secret.GetSecret("amprageDBKey").Result;
+            var dbConnnection = 
+                @"Server=tcp:amprage.database.windows.net,1433;Initial Catalog=AmpRageDB;Persist Security Info=False;User ID=Shadowacademy;Password=PatrikWiksten2019;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+
+            //services.AddSingleton(secret);
+            services.AddDbContext<AmpContext>(options => options.UseSqlServer(dbConnnection));
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

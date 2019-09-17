@@ -15,32 +15,45 @@
 
             <div class="form-group" style="width:400px">
                 <label asp-for="Origin" class="control-label"></label>
-                <input asp-for="Origin" class="form-control" style="width:400px" />
+
+                <input asp-for="Origin" class="form-control rounded-pill" />
                 <span asp-validation-for="Origin" class="text-danger"></span>
             </div>
 
             <div class="form-group" style="width:400px">
                 <label asp-for="Destination" class="control-label"></label>
-                <input asp-for="Destination" class="form-control" style="width:400px" />
+
+                <input asp-for="Destination" class="form-control rounded-pill" />
                 <span asp-validation-for="Destination" class="text-danger"></span>
             </div>
-
-            <div class="form-group" style="width:400px">
+            <div class="form-group" id="brand" style="width:400px">
                 <p class="control-label">Car brand:</p>
-                <select asp-for="Destination" name="id" class="rounded-pill" style="width:400px"></select>
+                <select asp-for="CarBrand" id="CarBrand" class="form-control rounded-pill" style="width:400px">
+                    @foreach (var item in Model.AllCarBrands)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group" id="make" style="width:400px">
+                <p class="control-label">Car brand + Range:</p>
+                <select asp-for="CarMake" id="CarMake" class="form-control rounded-pill" style="width:400px">
+                    @foreach (var item in Model.AllCarModels)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
             </div>
             <div class="form-group" style="width:400px">
-                <p class="control-label">Car model:</p>
-                <select asp-for="Destination" name="id" class="rounded-pill" style="width:400px"></select>
-            </div>
-            <div class="form-group" style="width:400px">
-                <p class="control-label">Car model:</p>
-                <select asp-for="Destination" name="id" class="rounded-pill" style="width:400px"></select>
+                <label asp-for="CurrentRangeM" class="control-label"></label>
+                <input asp-for="CurrentRangeM" class="form-control rounded-pill" />
+                <span asp-validation-for="CurrentRangeM" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" onclick="myFunction()" value="Search" class="btn btn-primary" />
-
-
+                <p class="control-label">
+                    <input type="submit" value="Search" class="btn btn-primary" />
+                </p>
             </div>
         </form>
     </div>
@@ -61,12 +74,10 @@
         google.maps.event.addDomListener(window, 'load', function () {
             new google.maps.places.SearchBox(document.getElementById('Origin'));
             new google.maps.places.SearchBox(document.getElementById('Destination'));
-
         });
         
 
     </script>
-
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 

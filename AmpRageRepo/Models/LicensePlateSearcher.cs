@@ -16,66 +16,37 @@ namespace AmpRageRepo.Models
     {
         static AmpContext _contex = new AmpContext();
 
-        [HttpGet]
-        public static async Task<Car> FindPlate(string inputRegNumber)
+        public static Car CheckForCarInDatabase(string carBrand, string carMake)
         {
-            //var inputRegNumber = "XJE60L";
-            SearchedCar searchedCar = CheckForPlateInFile(inputRegNumber);
-            if (searchedCar != null)
-            {
-                var aCar = _contex.Cars.Where(x => x.Make == searchedCar.Make).FirstOrDefault();
-                aCar.LicensePlate = searchedCar.LicensePlate;
-                return aCar;
-            }
-            RootObject rootObject = null;
-            var apiAddress = $@"https://api.biluppgifter.se/api/v1/vehicle/regno/{inputRegNumber}?api_token=HVoQrD3Lz8iFKKgUKV2VVALvlCbfPkiC2tTl1uaHM9iG2aAtjV9nWguASFc1";
+            var newCarMake = carMake.Split('-')[0].Trim().Replace(' ', ';');
 
-            using (var client = new HttpClient())
-            using (var response = await client.GetAsync(apiAddress))
+            return _contex.Cars.Where(x => x.Brand == carBrand && x.Make == newCarMake).FirstOrDefault(); ;
+        }
+
+        internal static IEnumerable<string> GetAllBrands()
+        {
+            var listOfBrands = new List<string>();
+            foreach (var car in _contex.Cars.ToList())
             {
-                if (response.IsSuccessStatusCode)
+                if (!listOfBrands.Contains(car.Brand))
                 {
-                    var json = await response.Content.ReadAsStringAsync();
-                    var settings = new JsonSerializerSettings();
-                    //settings.CheckAdditionalContent = true;
-                    try
-                    {
-                        rootObject = JsonConvert.DeserializeObject<RootObject>(json, settings);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception(e.Message);
-                    }
+                    listOfBrands.Add(car.Brand.ToString());
                 }
-
             }
-            var car = FindMatchingCar(rootObject);
+            return listOfBrands.OrderBy(x => x);
+        }
 
-            _contex.Add(new SearchedCar()
+        internal static IEnumerable<string> GetAllModels()
+        {
+            var listOfModels = new List<string>();
+            foreach (var car in _contex.Cars.ToList())
             {
-                Brand = car.Brand,
-                Make = car.Make,
-                LicensePlate = car.LicensePlate
-            });
-            _contex.SaveChanges();
-            return car;
-        }
-
-        private static Car FindMatchingCar(RootObject rootObject)
-        {
-
-            var tempMake = rootObject.data.basic.data.make.Split(';');
-
-            var car = _contex.Cars.Where(x => x.Brand == rootObject.data.basic.data.make).FirstOrDefault(); // Searching only on brand, not model
-
-            car.LicensePlate = rootObject.data.attributes.regno;
-
-            return car;
-        }
-
-        private static SearchedCar CheckForPlateInFile(string inputRegNumber)
-        {
-            return _contex.SearchedCars.Where(x => x.LicensePlate == inputRegNumber).FirstOrDefault(); ;
+                if (!listOfModels.Contains(car.Make))
+                {
+                    listOfModels.Add(car.Make.ToString().Replace(';', ' ') + $" - ({car.Range}km)");
+                }
+            }
+            return listOfModels.OrderBy(x => x);
         }
     }
 }
