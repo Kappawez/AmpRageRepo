@@ -20,7 +20,7 @@ namespace AmpRageRepo.Models
         {
             var newCarMake = carMake.Split('-')[0].Trim().Replace(' ', ';');
 
-            return _contex.Cars.Where(x => x.Brand == carBrand && x.Make == newCarMake).FirstOrDefault(); ;
+            return _contex.Cars.Where(x => x.Make == newCarMake).FirstOrDefault();
         }
 
         internal static IEnumerable<string> GetAllBrands()
