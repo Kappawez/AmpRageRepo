@@ -5,8 +5,18 @@
     ViewData["Title"] = "DisplayPath";
 }
 
-<div class="row">
-    <div class="col-md-12">
+
+<div class="container2">
+    <div id="floating-panel">
+        <div class="dropdown dropright">
+            <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span>Visa rutt</span></button>
+            <div class="dropdown-menu" style="width: 500px;">
+                <div id="directions_panel" class="">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="grid-item2">
         <!--Ugly solution for javascript to get utf-8 encoded strings-->
         <p hidden id="origin">"@Model.Origin"</p>
         <p hidden id="dest">"@Model.Destination"</p>
@@ -20,10 +30,25 @@
             }
         </ul>
 
-        <div id="dvMap" style="min-height:500px"></div>
+        <div id="dvMap" style="min-height:650px"></div>
     </div>
 </div>
 
+
+@*<div id="wrapper2">
+        <div id="first2">
+            <button data-toggle="collapse" data-target="#directions_panel">More info</button>
+
+            <div id="directions_panel" style="width:500px;" class="collapse"></div>
+
+        </div>
+        <div id="second2">
+            <button data-toggle="collapse" data-target="#demo">Specific info</button>
+
+            <div id="demo" style="width:500px;" class="collapse"></div>
+
+        </div>
+    </div>*@
 
 @section scripts{
 
@@ -55,7 +80,7 @@
             GetRoute();
         });
 
-        //directionsDisplay.setPanel(document.getElementById('demo'));
+
 
         function GetRoute() {
 
@@ -81,19 +106,49 @@
             };
 
             directionsService.route(request, function (response, status) {
-                console.log(status);
                 if (status == google.maps.DirectionsStatus.OK) {
-
-                    response.routes[0].legs.forEach(function (item, index) {
-                    });
-
                     directionsDisplay.setDirections(response);
+                    var route = response.routes[0];
+                    var summaryPanel = document.getElementById("directions_panel");
+                    summaryPanel.innerHTML = "";
+                    // For each route, display summary information.
+                    for (var i = 0; i < route.legs.length; i++) {
+                        var routeSegment = i + 1;
+                        summaryPanel.innerHTML += "<b>Ruttdel: " + routeSegment + "</b><br />";
+                        summaryPanel.innerHTML += route.legs[i].start_address + " till ";
+                        summaryPanel.innerHTML += route.legs[i].end_address + "<br />";
+                        summaryPanel.innerHTML += route.legs[i].duration.text + "<br/>";
+                        summaryPanel.innerHTML += route.legs[i].distance.text + "<br /><br />";
+
+                    }
+                    computeTotalDistance(response);
+                } else {
+                    alert("directions response " + status);
                 }
-                else {
-                    //handle error
-                }
-            })
-        };
+                //directionsDisplay.setPanel(document.getElementById('demo'));
+            });
+        }
+        function computeTotalDistance(result) {
+            var totalDist = 0;
+            var totalTime = 0;
+            var totalMin = 0;
+            var totalHour = 0;
+
+            var myroute = result.routes[0];
+            for (i = 0; i < myroute.legs.length; i++) {
+                totalDist += myroute.legs[i].distance.value;
+                totalTime += myroute.legs[i].duration.value;
+            }
+            totalDist = totalDist / 1000.
+
+            var totalHour    = Math.floor(totalTime / (60*60));
+                    totalTime -= totalHour   * (60*60);
+            var totalMin  = Math.floor(totalTime / (60));
+                    totalTime -= totalMin * (60);
+
+            document.getElementById("directions_panel").innerHTML += "Totala sträckan är: " + totalDist.toFixed(0) + " km<br>Totala tiden: " + totalHour + " tim " + totalMin + " min ";
+           document.getElementById("directions_panel").innerHTML += '<br /> <button type="button" class="btn btn-primary" style="padding-left: 30px; padding-right: 30px"  asp-controller="Path" asp-action="CreatePath">Ny Sökning</button>'
+        }
 
     </script>
     <!-- end code for example 1 -->
