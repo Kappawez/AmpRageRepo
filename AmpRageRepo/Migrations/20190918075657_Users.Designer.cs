@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AmpRageRepo.Migrations
 {
     [DbContext(typeof(AmpContext))]
-    [Migration("20190916141511_Users")]
+    [Migration("20190918075657_Users")]
     partial class Users
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -362,7 +362,7 @@ namespace AmpRageRepo.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserCar");
+                    b.ToTable("UserCars");
                 });
 
             modelBuilder.Entity("AmpRageRepo.Models.Basic", b =>

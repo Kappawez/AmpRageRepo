@@ -21,7 +21,7 @@ namespace AmpRageRepo.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Users.ToListAsync());
+            return View(await _context.Users.Include(x => x.UserCars).ToListAsync());
         }
 
         // GET: Users/Details/5
@@ -33,7 +33,10 @@ namespace AmpRageRepo.Controllers
             }
 
             var user = await _context.Users
+                .Include(x => x.UserCars)
+                .ThenInclude(y => y.Car)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (user == null)
             {
                 return NotFound();
@@ -41,7 +44,73 @@ namespace AmpRageRepo.Controllers
 
             return View(user);
         }
+        public async Task<IActionResult> AddCarToUser(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            var user = await _context.Users.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var userCarViewModel = new UserCarViewModel()
+            {
+                UserId = user.Id,
+                AllCarBrands = LicensePlateSearcher.GetAllBrands().Select(x => new SelectListItem
+                {
+                    Text = x,
+                    Value = x.ToString()
+                }),
+                AllCarModels = LicensePlateSearcher.GetAllModels().Select(x => new SelectListItem
+                {
+                    Text = x,
+                    Value = x.ToString()
+                })
+            };
+
+            return View(userCarViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddCarToUser(UserCarViewModel userCarViewModel)
+        {
+            try
+            {
+                var user = await _context.Users.Include(x => x.UserCars).FirstOrDefaultAsync(m => m.Id == userCarViewModel.UserId);
+                //var car = LicensePlateSearcher.CheckForCarInDatabase(userCarViewModel.CarBrand, userCarViewModel.CarMake);
+                var car = await _context.Cars.FirstOrDefaultAsync(c => c.Make == userCarViewModel.CarMake);
+
+                if(user != null && car != null)
+                {
+                    var userCar = new UserCar
+                    {
+                        User = user,
+                        Car = car
+                    };
+
+                    user.UserCars.Add(userCar);
+
+                    _context.Add(userCar);
+
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new Exception("NULL");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
         // GET: Users/Create
         public IActionResult Create()
         {
@@ -66,6 +135,7 @@ namespace AmpRageRepo.Controllers
                 };
 
                 _context.Add(user);
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
