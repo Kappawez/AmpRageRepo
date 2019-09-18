@@ -40,6 +40,7 @@ namespace AmpRageRepo.Controllers
 
             var car = await _context.Cars
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (car == null)
             {
                 return NotFound();
