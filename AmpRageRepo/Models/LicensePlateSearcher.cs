@@ -48,5 +48,10 @@ namespace AmpRageRepo.Models
             }
             return listOfModels.OrderBy(x => x);
         }
+
+        internal static IEnumerable<Car> GetAllCars()
+        {
+           return _contex.Cars.ToList();
+        }
     }
 }
