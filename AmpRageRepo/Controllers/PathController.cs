@@ -17,6 +17,7 @@ namespace AmpRageRepo.Controllers
 
         //    apiKey = secret.GetSecret("GoogleApiKey190916").Result;
         //    //Sync(secret);
+
         //}
         //private async void Sync(SecretController secret)
         //{
@@ -60,7 +61,7 @@ namespace AmpRageRepo.Controllers
                 path.MaxRangeM = (path.RangeKm * 1000);    //km -> m
                 path.MinRangeM = (path.RangeKm * 1000 * 0.2); //20% of MaxRangeM
                 path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM; //diff
-                path.CurrentRangeM = 5 * 1000;
+                path.CurrentRangeM = path.MaxRangeM * (path.CurrentRangeM / 100);  //50 * 1000;
             }
 
             var direction = await Google_GetDirection(path);
