@@ -38,12 +38,13 @@ namespace AmpRageRepo
 
             //var secret = new SecretController();
 
-            //var dbConnnection = secret.GetSecret("amprageDBKey").Result;
-            var dbConnnection = 
-                @"Server=tcp:amprage.database.windows.net,1433;Initial Catalog=AmpRageDB;Persist Security Info=False;User ID=Shadowacademy;Password=PatrikWiksten2019;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            //var dbConnection = secret.GetSecret("amprageDBKey").Result;
+            var dbConnection = Configuration.GetConnectionString("DbConnection");
+            //var dbConnection = "Server=tcp:amprage.database.windows.net,1433;Initial Catalog=AmpRageDB;Persist Security Info=False;User ID=Shadowacademy;Password=PatrikWiksten2019;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            //var dbConnection = "Server = (localdb)\\mssqllocaldb; Database = LocalAmpRageDb; Trusted_Connection = True; ";
 
             //services.AddSingleton(secret);
-            services.AddDbContext<AmpContext>(options => options.UseSqlServer(dbConnnection));
+            services.AddDbContext<AmpContext>(options => options.UseSqlServer(dbConnection));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 

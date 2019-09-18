@@ -18,9 +18,11 @@ namespace AmpRageRepo.Models
 
         public static Car CheckForCarInDatabase(string carBrand, string carMake)
         {
-            var newCarMake = carMake.Split('-')[0].Trim().Replace(' ', ';');
+            //var newCarMake = carMake.Split('-')[0].Trim().Replace(' ', ';');
+            var car = _contex.Cars.Where(x => /*x.Brand == carBrand &&*/ x.Make == carMake).FirstOrDefault();
+            //var nbCars = _contex.Cars.Count();
 
-            return _contex.Cars.Where(x => x.Brand == carBrand && x.Make == newCarMake).FirstOrDefault(); ;
+            return car;
         }
 
         internal static IEnumerable<string> GetAllBrands()
@@ -30,7 +32,7 @@ namespace AmpRageRepo.Models
             {
                 if (!listOfBrands.Contains(car.Brand))
                 {
-                    listOfBrands.Add(car.Brand.ToString());
+                    listOfBrands.Add(car.Brand);
                 }
             }
             return listOfBrands.OrderBy(x => x);
@@ -43,10 +45,25 @@ namespace AmpRageRepo.Models
             {
                 if (!listOfModels.Contains(car.Make))
                 {
-                    listOfModels.Add(car.Make.ToString().Replace(';', ' ') + $" - ({car.Range}km)");
+                    //listOfModels.Add(car.Make.ToString().Replace(';', ' ') + $" - ({car.Range}km)");
+                    listOfModels.Add(car.Make);
                 }
             }
             return listOfModels.OrderBy(x => x);
+        }
+        internal static IEnumerable<Car> GetAllCars()
+        {
+            var listOfCars = new List<Car>();
+            var list = new List<string>();
+            foreach (var car in _contex.Cars.ToList())
+            {
+                if (list.Contains(car.Brand) == false)
+                {
+                    list.Add(car.Brand);
+                    listOfCars.Add(car);
+                }
+            }
+            return listOfCars.OrderBy(x => x.Brand);
         }
     }
 }

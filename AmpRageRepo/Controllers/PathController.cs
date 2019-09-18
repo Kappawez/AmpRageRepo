@@ -52,7 +52,8 @@ namespace AmpRageRepo.Controllers
                 if (car == null)
                 {
                     path.RangeKm = 350;
-                } else
+                }
+                else
                 {
                     path.RangeKm = car.Range;
                 }

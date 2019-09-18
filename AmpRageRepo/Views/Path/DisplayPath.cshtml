@@ -66,11 +66,6 @@
 
             var wayPoints = [];
 
-            @*@foreach (var item in Model.WayPointStrings)
-            {
-                @:wayPoints.push({ location: "@item", stopover: true });
-            }*@
-
             for (var i = 0; i < items.length; ++i) {
                 var string = items[i].textContent;
                 console.log(string);

@@ -360,7 +360,7 @@ namespace AmpRageRepo.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserCar");
+                    b.ToTable("UserCars");
                 });
 
             modelBuilder.Entity("AmpRageRepo.Models.Basic", b =>
