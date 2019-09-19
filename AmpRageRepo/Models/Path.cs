@@ -13,8 +13,8 @@ namespace AmpRageRepo.Models
     {
         public Path()
         {
-            WayPoints = new List<CoordinateEntity>();
-            ChargingStations = new List<ChargingStationRootObject>();
+            Waypoints = new List<Waypoint>();
+            //ChargingStations = new List<ChargingStationRootObject>();
             WayPointStrings = new List<string>();
         }
 
@@ -40,12 +40,11 @@ namespace AmpRageRepo.Models
         public IEnumerable<SelectListItem> AllCars { get; set; }
         public IEnumerable<SelectListItem> AllCarsByUser { get; set; }
 
-        public string temp;
-
-        //public SecretController SecretController { get; private set; }
         public DirectionRootObject Direction { get; set; }
-        public List<CoordinateEntity> WayPoints { get; set; }
-        public List<ChargingStationRootObject> ChargingStations { get; set; }
+        public List<Waypoint> Waypoints { get; set; }
+        //public List<ChargingStationRootObject> ChargingStations { get; set; }
+
+        //stupid razor pages cannot loop  through WayPoints.CoordString??
         public List<string> WayPointStrings { get; set; }
     }
 }
