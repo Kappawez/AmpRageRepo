@@ -76,6 +76,7 @@ body {
     grid-auto-rows:max-content; 
     padding: 0px;
 }
+
 #floating-panel {
     position: absolute;
     top: 178px;
@@ -121,6 +122,7 @@ body {
     padding: 30px;
     background-color: grey;
 }
+
 
 #second {
     /*flex: 1;*/

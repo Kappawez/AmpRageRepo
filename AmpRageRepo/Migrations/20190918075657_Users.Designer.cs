@@ -4,14 +4,16 @@ using AmpRageRepo.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AmpRageRepo.Migrations
 {
     [DbContext(typeof(AmpContext))]
-    partial class AmpContextModelSnapshot : ModelSnapshot
+    [Migration("20190918075657_Users")]
+    partial class Users
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,21 +78,6 @@ namespace AmpRageRepo.Migrations
                     b.HasIndex("dataId");
 
                     b.ToTable("Basic");
-                });
-
-            modelBuilder.Entity("AmpRageRepo.Models.CountryEmission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Country");
-
-                    b.Property<double>("KgCo2Kwh");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("CountryEmissions");
                 });
 
             modelBuilder.Entity("AmpRageRepo.Models.Data", b =>

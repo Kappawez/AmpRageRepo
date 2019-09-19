@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AmpRageRepo.Migrations
 {
     [DbContext(typeof(AmpContext))]
-    [Migration("20190916141511_Users")]
-    partial class Users
+    [Migration("20190918123446_emissions")]
+    partial class emissions
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -78,6 +78,21 @@ namespace AmpRageRepo.Migrations
                     b.HasIndex("dataId");
 
                     b.ToTable("Basic");
+                });
+
+            modelBuilder.Entity("AmpRageRepo.Models.CountryEmission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Country");
+
+                    b.Property<double>("KgCo2Kwh");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CountryEmissions");
                 });
 
             modelBuilder.Entity("AmpRageRepo.Models.Data", b =>
@@ -362,7 +377,7 @@ namespace AmpRageRepo.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserCar");
+                    b.ToTable("UserCars");
                 });
 
             modelBuilder.Entity("AmpRageRepo.Models.Basic", b =>

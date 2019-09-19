@@ -22,19 +22,11 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <header>
-
-        @*<div id="hej" class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3 d-flex justify-content-between">*@
-
-        @*<div class="p-2">
-            <a class="navbar-brand" asp-area="" asp-controller="Path" asp-action="CreatePath"><h1 class="display-3"><img src="~/fav1.png" width="80" height="80" /><b>A</b>mp<b>R</b>age</h1></a>
-        </div>
-        <div>*@
-        </div>
-        @*</div>*@
-    </header>
+   
 
     @RenderBody()
+
+
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -57,9 +49,6 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)
-
-
 </body>
 </html>
-
 

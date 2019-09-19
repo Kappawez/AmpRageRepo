@@ -3,10 +3,8 @@
 
 @{
     ViewData["Title"] = "DisplayPath";
+    Layout = "_Layout2";
 }
-
-
-
 
 
 <div class="container-fluid">
@@ -28,6 +26,56 @@
         </div>
     </div>
     @*</div>*@
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #dvMap {
+        height: 100%;
+    }
+
+    .ShowRouteBtn {
+        background-Color: #fff;
+        border: 2px solid #fff;
+        border-Radius: 3px;
+        box-Shadow: 0 2px 6px rgba(0,0,0,.3);
+        cursor: pointer;
+        text-Align: left;
+        color: rgb(25,25,25);
+        font-Family: Roboto,Arial,sans-seri;
+        font-weight: bold;
+        font-Size: 16px;
+        line-Height: 32px;
+        padding-Left: 10px;
+        padding-Right: 10px;
+    }
+</style>
+
+
+<div id="dvMap"></div>
+<div class="container-fluid">
+
+    <div class="row">
+                <div id="directions_panel" class="col-sm-7 col-lg-7">
+                    Tid
+                </div>
+                <div id="time" class="col-sm-3 col-lg-3">
+                    Tid<br />
+                </div>
+                <div id="range" class="col-sm-2 col-lg-2">
+                    Avstånd<br />
+                </div>
+            </div>
+  </div>
+
+<div id="returnDiv" style="margin: 10px">
+    <a class="btn ShowRouteBtn" asp-area="" asp-controller="Path" asp-action="CreatePath"><span class="bigger">◄ Ny sökning</span></a>
+</div>
+
 </div>
 
 <div class="">
@@ -70,10 +118,13 @@
         var map = new google.maps.Map(document.getElementById('dvMap'), {
             center: { lat: 62, lng: 17 },
             zoom: 7,
-            mapTypeId: 'roadmap'
-        });
+            mapTypeId: 'roadmap',
+            mapTypeControl: false
+          }
+        );
 
-
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('returnDiv'));
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('descriptionPanel'));
 
         google.maps.event.addDomListener(window, 'load', function () {
             directionsDisplay = new google.maps.DirectionsRenderer({ 'draggable': true });
@@ -90,11 +141,6 @@
             var items = ul.getElementsByTagName("li");
 
             var wayPoints = [];
-
-            @*@foreach (var item in Model.WayPointStrings)
-            {
-                @:wayPoints.push({ location: "@item", stopover: true });
-            }*@
 
             for (var i = 0; i < items.length; ++i) {
                 var string = items[i].textContent;
@@ -158,10 +204,11 @@
             var totalMin  = Math.floor(totalTime / (60));
                     totalTime -= totalMin * (60);
 
+
             //document.getElementById("directions_panel").innerHTML += "Totala sträckan är: " + totalDist.toFixed(0) + " km<br>Totala tiden: " + totalHour + " tim " + totalMin + " min " + "</br>";
             document.getElementById("time").innerHTML += "</br>" + "Totalt: " + totalHour + " tim " + totalMin + " min " + "</br>";
-                document.getElementById("range").innerHTML += "</br>" + "Totalt: " + totalDist.toFixed(0) + " km<br>";
-           document.getElementById("directions_panel").innerHTML += '<br /> <button type="button" class="btn btn-primary" style="padding-left: 30px; padding-right: 30px; opacity: 1;"  asp-controller="Path" asp-action="CreatePath">Ny Sökning</button>'
+            document.getElementById("range").innerHTML += "</br>" + "Totalt: " + totalDist.toFixed(0) + " km<br>";
+
         }
 
     </script>

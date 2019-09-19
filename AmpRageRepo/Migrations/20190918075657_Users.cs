@@ -24,7 +24,7 @@ namespace AmpRageRepo.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserCar",
+                name: "UserCars",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -34,15 +34,15 @@ namespace AmpRageRepo.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserCar", x => x.Id);
+                    table.PrimaryKey("PK_UserCars", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserCar_Cars_CarId",
+                        name: "FK_UserCars_Cars_CarId",
                         column: x => x.CarId,
                         principalTable: "Cars",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserCar_Users_UserId",
+                        name: "FK_UserCars_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -50,20 +50,20 @@ namespace AmpRageRepo.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserCar_CarId",
-                table: "UserCar",
+                name: "IX_UserCars_CarId",
+                table: "UserCars",
                 column: "CarId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserCar_UserId",
-                table: "UserCar",
+                name: "IX_UserCars_UserId",
+                table: "UserCars",
                 column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "UserCar");
+                name: "UserCars");
 
             migrationBuilder.DropTable(
                 name: "Users");
