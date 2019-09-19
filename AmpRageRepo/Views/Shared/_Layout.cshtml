@@ -24,36 +24,38 @@
 <body>
     <header>
 
-        <div id="hej" class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3 d-flex justify-content-between">
+        @*<div id="hej" class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3 d-flex justify-content-between">*@
 
-            <div class="p-2">
-                <a class="navbar-brand" asp-area="" asp-controller="Path" asp-action="CreatePath"><h1 class="display-3"><img src="~/fav1.png" width="80" height="80" /><b>A</b>mp<b>R</b>age</h1></a>
-            </div>
-            <div>
+        @*<div class="p-2">
+            <a class="navbar-brand" asp-area="" asp-controller="Path" asp-action="CreatePath"><h1 class="display-3"><img src="~/fav1.png" width="80" height="80" /><b>A</b>mp<b>R</b>age</h1></a>
+        </div>
+        <div>*@
 
-            </div>
-            <div class="dropdown dropleft">
-                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Logga in <span class="glyphicon glyphicon-log-in"></span></button>
-                <div class="dropdown-menu" style="width: 250px;">
-                    <form id="formLogin" class="form container-fluid">
-                        <div class="form-group">
-                            <label for="usr">Namn:</label>
-                            <input type="text" class="form-control" id="userName">
-                        </div>
-                        <div class="form-group">
-                            <label for="pwd">Lösenord:</label>
-                            <input type="password" class="form-control" id="password">
-                        </div>
-                        <button type="button" id="btnLogin" class="btn btn-primary">Registrera</button>
-                        <button type="button" id="btnLogin" class="btn btn-primary">Logga in</button>
-                    </form>
-                    <div class="container-fluid">
-                        <br>
-                        <a class="small" href="#">Glömt lösenord?</a>
+        @*</div>*@
+        @*<div class="p-2"></div>*@
+        <a class= "logoamprage" style="text-align: center" asp-area ="" asp-controller="Path" asp-action="CreatePath"><h1 class="display-3"><img src="~/fav1.png" width="80" height="80" /><b>A</b>mp<b>R</b>age</h1></a>
+        <div class="dropdown dropleft">
+            <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Logga in <span class="glyphicon glyphicon-log-in"></span></button>
+            <div class="dropdown-menu" style="width: 250px;">
+                <form id="formLogin" class="form container-fluid">
+                    <div class="form-group">
+                        <label for="usr">Namn:</label>
+                        <input type="text" class="form-control" id="userName">
                     </div>
+                    <div class="form-group">
+                        <label for="pwd">Lösenord:</label>
+                        <input type="password" class="form-control" id="password">
+                    </div>
+                    <button type="button" id="btnLogin" class="btn btn-primary">Registrera</button>
+                    <button type="button" id="btnLogin" class="btn btn-primary">Logga in</button>
+                </form>
+                <div class="container-fluid">
+                    <br>
+                    <a class="small" href="#">Glömt lösenord?</a>
                 </div>
             </div>
         </div>
+        @*</div>*@
     </header>
 
     @RenderBody()

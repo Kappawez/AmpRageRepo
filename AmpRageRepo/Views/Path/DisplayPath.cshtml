@@ -6,49 +6,49 @@
 }
 
 
-<div class="container2">
-    <div id="floating-panel">
-        <div class="dropdown dropright">
-            <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span>Visa rutt</span></button>
-            <div class="dropdown-menu" style="width: 500px;">
-                <div id="directions_panel" class="">
+
+
+
+<div class="container-fluid">
+    @*<div id="floating-panel">*@
+    <div class="dropdown dropright">
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span>Visa rutt</span></button>
+        <div class="dropdown-menu" style="opacity: 0.7; width: 700px;">
+            <div class="row">
+                <div id="directions_panel" class="col-sm-7 col-lg-7">
+                    Tid
+                </div>
+                <div id="time" class="col-sm-3 col-lg-3">
+                    Tid<br />
+                </div>
+                <div id="range" class="col-sm-2 col-lg-2">
+                    Avstånd<br />
                 </div>
             </div>
         </div>
     </div>
-    <div class="grid-item2">
-        <!--Ugly solution for javascript to get utf-8 encoded strings-->
-        <p hidden id="origin">"@Model.Origin"</p>
-        <p hidden id="dest">"@Model.Destination"</p>
+    @*</div>*@
+</div>
 
-        <ul hidden id="wps">
-            @foreach (var item in Model.WayPointStrings)
-            {
-                <li>
-                    @Html.Raw(item)
-                </li>
-            }
-        </ul>
+<div class="">
 
-        <div id="dvMap" style="min-height:650px"></div>
-    </div>
+    <p hidden id="origin">"@Model.Origin"</p>
+    <p hidden id="dest">"@Model.Destination"</p>
+
+    <ul hidden id="wps">
+        @foreach (var item in Model.WayPointStrings)
+        {
+            <li>
+                @Html.Raw(item)
+            </li>
+        }
+    </ul>
+
+    <div id="dvMap" style="min-height:650px"></div>
 </div>
 
 
-@*<div id="wrapper2">
-        <div id="first2">
-            <button data-toggle="collapse" data-target="#directions_panel">More info</button>
 
-            <div id="directions_panel" style="width:500px;" class="collapse"></div>
-
-        </div>
-        <div id="second2">
-            <button data-toggle="collapse" data-target="#demo">Specific info</button>
-
-            <div id="demo" style="width:500px;" class="collapse"></div>
-
-        </div>
-    </div>*@
 
 @section scripts{
 
@@ -115,15 +115,22 @@
                     directionsDisplay.setDirections(response);
                     var route = response.routes[0];
                     var summaryPanel = document.getElementById("directions_panel");
+                        var summaryPanell = document.getElementById("time");
+                        var summaryPanelll = document.getElementById("range");
                     summaryPanel.innerHTML = "";
+                        //summaryPanel.innerHTML += "<b>Tid" + "<b>längd" + "</b><br/>";
                     // For each route, display summary information.
                     for (var i = 0; i < route.legs.length; i++) {
                         var routeSegment = i + 1;
-                        summaryPanel.innerHTML += "<b>Ruttdel: " + routeSegment + "</b><br />";
-                        summaryPanel.innerHTML += route.legs[i].start_address + " till ";
-                        summaryPanel.innerHTML += route.legs[i].end_address + "<br />";
-                        summaryPanel.innerHTML += route.legs[i].duration.text + "<br/>";
-                        summaryPanel.innerHTML += route.legs[i].distance.text + "<br /><br />";
+                        //summaryPanel.innerHTML += "<b>Ruttdel: " + routeSegment + "</b><br />";
+                        summaryPanel.innerHTML += "▼" + route.legs[i].start_address + "<br />"; /*+ route.legs[i].duration.text + "\t" + route.legs[i].distance.text + "<br/>"*/
+                        summaryPanell.innerHTML += route.legs[i].duration.text + "<br/>";
+                        summaryPanelll.innerHTML += route.legs[i].distance.text + "<br/>";
+                        if (i == route.legs.length-1) {
+
+                        summaryPanel.innerHTML += "►" + route.legs[i].end_address + "<br />";
+                        }
+
 
                     }
                     computeTotalDistance(response);
@@ -151,8 +158,10 @@
             var totalMin  = Math.floor(totalTime / (60));
                     totalTime -= totalMin * (60);
 
-            document.getElementById("directions_panel").innerHTML += "Totala sträckan är: " + totalDist.toFixed(0) + " km<br>Totala tiden: " + totalHour + " tim " + totalMin + " min ";
-           document.getElementById("directions_panel").innerHTML += '<br /> <button type="button" class="btn btn-primary" style="padding-left: 30px; padding-right: 30px"  asp-controller="Path" asp-action="CreatePath">Ny Sökning</button>'
+            //document.getElementById("directions_panel").innerHTML += "Totala sträckan är: " + totalDist.toFixed(0) + " km<br>Totala tiden: " + totalHour + " tim " + totalMin + " min " + "</br>";
+            document.getElementById("time").innerHTML += "</br>" + "Totalt: " + totalHour + " tim " + totalMin + " min " + "</br>";
+                document.getElementById("range").innerHTML += "</br>" + "Totalt: " + totalDist.toFixed(0) + " km<br>";
+           document.getElementById("directions_panel").innerHTML += '<br /> <button type="button" class="btn btn-primary" style="padding-left: 30px; padding-right: 30px; opacity: 1;"  asp-controller="Path" asp-action="CreatePath">Ny Sökning</button>'
         }
 
     </script>
