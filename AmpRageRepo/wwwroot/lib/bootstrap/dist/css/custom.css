@@ -7,26 +7,49 @@
     
 }
 
+.logoamprage {
+   
+}
+    .logoamprage:hover, .logoamprage:focus {
+        text-decoration: none;
+    }
+
 body {
-    padding: 0;
+    background-image: url("/Amp4.jpg");
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: 1;
     margin: 0;
-    background: teal;
+    width: 100%;
 }
 
-.container {
-    /*display: flex;*/
+/*.dropdown-menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
+}*/
+
+
+
+/*.container {
+    display: flex;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
-    /*padding: 10px;*/
+    padding: 10px;
     grid-gap: 5px;
-    /*margin: 50px;*/
-}
+    margin: 50px;
+}*/
 .container2 {
+    display: flex;
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    padding: 5px;
     grid-gap: 5px;
+    margin: 20px;
 }
 .full-width {
     padding: 0px;
@@ -42,7 +65,7 @@ body {
     width: 50%;
     overflow: hidden;*/
     grid-column: span 1;
-    padding: 30px;
+    padding: 50px;
 }
 .grid-item2 {
     /*flex: 0 0 65%;*/
@@ -53,6 +76,43 @@ body {
     grid-auto-rows:max-content; 
     padding: 0px;
 }
+
+#floating-panel {
+    position: absolute;
+    top: 178px;
+    left: 10%;
+    z-index: 5;
+    padding: 5px;
+    text-align: center;
+    font-family: 'Roboto','sans-serif';
+    line-height: 30px;
+    padding-left: 10px;
+}
+
+.dropdown-menu-route {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 10rem;
+    padding: 0.5rem 0;
+    margin: 0.125rem 0 0;
+    font-size: 1rem;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
+}
+.dropdown-menu-right {
+    right: 0;
+    left: auto;
+}
+
 .grid-item3 {
     /*flex: 0 0 65%;*/
     /*float: left;
@@ -60,7 +120,7 @@ body {
     overflow: hidden;*/
     grid-column: span 1;
     padding: 30px;
-    background-color:grey;
+    background-color: grey;
 }
 
 

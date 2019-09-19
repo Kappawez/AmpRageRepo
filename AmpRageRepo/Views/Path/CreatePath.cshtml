@@ -4,12 +4,79 @@
     ViewData["Title"] = "CreatePath";
 }
 
+    <a class="logoamprage" style="text-align: center" asp-area="" asp-controller="Path" asp-action="CreatePath"><h1 class="display-3"><img src="~/fav1.png" width="80" height="80" /><b>A</b>mp<b>R</b>age</h1></a>
+
+<div id="currentUserDiv">Inloggad som: DennaSkaAldrigSynas</div>
+<div class="dropdown dropleft">
+    <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Logga in <span class="glyphicon glyphicon-log-in"></span></button>
+    <div class="dropdown-menu" style="width: 250px;">
+
+        <input type="radio" id="radioLogin" class="" style="margin: 5px">Logga in<br />
+        <input type="radio" id="radioRegister" class="" style="margin: 5px">Registrera dig<br />
+
+        <div id="dropdown-content-reg">
+            <form asp-controller="Users" asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="@Model.userViewModel.Name" class="control-label"></label>
+                    <input asp-for="@Model.userViewModel.Name" class="form-control" />
+                    <span asp-validation-for="@Model.userViewModel.Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.userViewModel.Phone" class="control-label"></label>
+                    <input asp-for="@Model.userViewModel.Phone" class="form-control" />
+                    <span asp-validation-for="@Model.userViewModel.Phone" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.userViewModel.Email" class="control-label"></label>
+                    <input asp-for="@Model.userViewModel.Email" class="form-control" />
+                    <span asp-validation-for="@Model.userViewModel.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.userViewModel.Password" class="control-label"></label>
+                    <input asp-for="@Model.userViewModel.Password" class="form-control" />
+                    <span asp-validation-for="@Model.userViewModel.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.userViewModel.ConfirmPassword" class="control-label"></label>
+                    <input asp-for="@Model.userViewModel.ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="@Model.userViewModel.ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" asp-action="Create" asp-controller="Users" value="Registrera" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+        <div id="dropdown-content-login">
+            <form asp-controller="Users" asp-action="Login">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="@Model.userViewModel.Name" class="control-label"></label>
+                    <input asp-for="@Model.userViewModel.Name" class="form-control" />
+                    <span asp-validation-for="@Model.userViewModel.Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.userViewModel.Password" class="control-label"></label>
+                    <input asp-for="@Model.userViewModel.Password" class="form-control" />
+                    <span asp-validation-for="@Model.userViewModel.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" asp-action="Login" asp-controller="Users" value="Log in" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+
+
+        <div class="container-fluid">
+            <br>
+            <a class="small" href="#">Glömt lösenord?</a>
+        </div>
+    </div>
+</div>
 
 <div class="container">
-    <div class="full-width">
-
-    </div>
-    <div class="grid-item">
+        
+    <div class="grid-item col-sm-6 col-lg-6">
         <form asp-action="CreatePath">
             <div asp-validation-summary="ModelOnly" class="text-danger" id="first"></div>
 
@@ -26,28 +93,52 @@
                 <input asp-for="Destination" class="form-control rounded-pill" />
                 <span asp-validation-for="Destination" class="text-danger"></span>
             </div>
-            <div class="form-group" id="brand" style="width:400px">
+
+            <div class="form-group" id="brand" style="width:400px; color:white;">
+                <input type="radio" id="radioMyCars" class="" style="margin: 5px">Mina bilar<br />
+                <input type="radio" id="radioAllCars" class="" style="margin: 5px">Alla bilar<br />
+
                 <p class="control-label">Bilmärke:</p>
-                <select asp-for="CarBrand" id="CarBrand" class="form-control rounded-pill" style="width:400px">
-                    @foreach (var item in Model.AllCarBrands)
-                    {
-                        <option value="@item.Value">@item.Text</option>
-                    }
-                </select>
+                <div id="myCarBrands">
+                    <select asp-for="CarBrand" id="CarBrand" class="form-control rounded-pill" style="width:400px">
+                        @{var currentUser = Model.User.Name;}
+
+                        @foreach (var item in Model.AllCarBrands)
+                        {
+                            foreach (var userCar in Model.User.UserCars)
+                            {
+                                if (item.Text == userCar.Car.Brand)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div id="allCarBrands">
+                    <select asp-for="CarBrand" id="CarBrand" class="form-control rounded-pill" style="width:400px">
+                        @foreach (var item in Model.AllCarBrands)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
             </div>
 
             <div class="form-group" id="make" style="width:400px">
                 <p class="control-label">Bilmodell - (Räckvidd):</p>
+
                 <select asp-for="CarMake" id="CarMake" class="form-control rounded-pill" style="width:400px">
-                    @{var banan = Model.AllCars.ToArray(); }
+                    @{var arrayOfCars = Model.AllCars.ToArray(); }
                     @{var listOfBrand = new List<string>();}
-                    @for (int i = 0; i < banan.Count(); i++)
+                    @for (int i = 0; i < arrayOfCars.Count(); i++)
                     {
-                        var allCarsWithSameBrand = Model.AllCars.Where(x => x.Text == banan[i].Text).ToList();
-                        if (!listOfBrand.Contains(banan[i].Text))   
+                        var allCarsWithSameBrand = Model.AllCars.Where(x => x.Text == arrayOfCars[i].Text).ToList();
+                        if (!listOfBrand.Contains(arrayOfCars[i].Text))
                         {
-                            listOfBrand.Add(banan[i].Text);
-                            <optgroup label="@banan[i].Text">
+                            listOfBrand.Add(arrayOfCars[i].Text);
+                            <optgroup label="@arrayOfCars[i].Text">
                                 @for (int a = 0; a < allCarsWithSameBrand.Count(); a++)
                                 {
                                     <option value="@allCarsWithSameBrand[a].Value">@allCarsWithSameBrand[a].Value</option>
@@ -58,22 +149,24 @@
                 </select>
             </div>
             <div class="form-group" style="width:400px">
-                <label class="control-label">Nuvarande räckvidd i %</label>
-                <input asp-for="CurrentRangeM" class="form-control rounded-pill"/>
+
+                <label class="control-label" style="color:white;>Nuvarande räckvidd i %</label>
+
+                <input asp-for="CurrentRangeM" class="form-control rounded-pill" />
                 <span asp-validation-for="CurrentRangeM" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <p class="control-label">
-                    <input type="submit" value="Search" class="btn btn-primary"/>
+                    <input type="submit" value="Search" class="btn btn-primary" />
                 </p>
             </div>
         </form>
     </div>
-    <div class="grid-item">
-        <h1>Välkommen till AmpRage</h1>
-        <p>AmpRange är den bästa sidan på marknaden för att på ett så effektivt sätt ta dig från punkt a till b med din fina elbil.</p>
-    </div>
 </div>
+    <div class="grid-item col-sm-6 col-lg-6 float-left">
+        <h1 style="color:white; opacity: 1;">Välkommen till AmpRage</h1>
+        <p style="color:white; opacity: 1;">AmpRage är den bästa sidan på marknaden för att på ett så effektivt sätt ta dig från punkt a till b med din fina elbil.</p>
+    </div>
 
 
 
@@ -82,16 +175,16 @@
     <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBhIgKBChJZ9HwlAS5FdKkMFKuneDc8RjY" type="text/javascript"></script>
 
     <script>
-                $(document).ready(function(){
-                  var $optgroups = $('#CarMake > optgroup');
-                      $("#make").hide();
-  
-                  $("#CarBrand").on("change",function(){
-                      var selectedVal = this.value;
-                      $("#make").show();
-                    $('#CarMake').html($optgroups.filter('[label="'+selectedVal+'"]'));
-                 });  
-                }); 
+        $(document).ready(function () {
+            var $optgroups = $('#CarMake > optgroup');
+            $("#make").hide();
+
+            $("#CarBrand").on("change", function () {
+                var selectedVal = this.value;
+                $("#make").show();
+                $('#CarMake').html($optgroups.filter('[label="' + selectedVal + '"]'));
+            });
+        });
     </script>
 
     <script>
@@ -103,6 +196,46 @@
 
 
     </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#dropdown-content-reg").hide();
+            $("#radioLogin").attr('checked', true);
+
+            $("#radioRegister").on('click', function () {
+                $("#dropdown-content-reg").show();
+                $("#dropdown-content-login").hide();
+                $("#radioRegister").prop('checked', true);
+                $("#radioLogin").prop('checked', false);
+            });
+            $("#radioLogin").on('click', function () {
+                $("#dropdown-content-reg").hide();
+                $("#dropdown-content-login").show();
+                $("#radioLogin").prop('checked', true);
+                $("#radioRegister").prop('checked', false);
+            });
+            $("#radioMyCars").on('click', function () {
+                $("#allCarBrands").hide();
+                $("#myCarBrands").show();
+                $("#radioMyCars").prop('checked', true);
+                $("#radioAllCars").prop('checked', false);
+            });
+            $("#radioAllCars").on('click', function () {
+                $("#myCarBrands").hide();
+                $("#allCarBrands").show();
+                $("#radioAllCars").prop('checked', true);
+                $("#radioMyCars").prop('checked', false);
+            });
+        });
+        function SetCurrentUser() {
+            document.getElementById('currentUserDiv').innerHTML = "Inloggad som: @Model.User.Name"
+        }
+    </script>
+
+    <script>
+        $(document).load(SetCurrentUser());
+    </script>
+
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
