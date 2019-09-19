@@ -33,9 +33,12 @@ namespace AmpRageRepo.Models
         public double CurrentRangeM { get; set; } //TotalMaxRangeM - traveled so far
         public double MinRangeM { get; set; } //MaxRangeM * 0.2
         public double MaxRangeM { get; set; } //RangeKm -> km -> m
+        public UserViewModel userViewModel { get; set; }
+        public User User { get; set; }
         public IEnumerable<SelectListItem> AllCarBrands { get; set; }
         public IEnumerable<SelectListItem> AllCarModels { get; set; }
         public IEnumerable<SelectListItem> AllCars { get; set; }
+        public IEnumerable<SelectListItem> AllCarsByUser { get; set; }
 
         public string temp;
 

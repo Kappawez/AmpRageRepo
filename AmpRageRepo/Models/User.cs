@@ -23,4 +23,5 @@ namespace AmpRageRepo.Models
 
         public virtual List<UserCar> UserCars { get; set; }
     }
+
 }
