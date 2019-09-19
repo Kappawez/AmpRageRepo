@@ -89,7 +89,8 @@ namespace AmpRageRepo.Controllers
             {
                 var user = await _context.Users.Include(x => x.UserCars).FirstOrDefaultAsync(m => m.Id == userCarViewModel.UserId);
                 //var car = LicensePlateSearcher.CheckForCarInDatabase(userCarViewModel.CarBrand, userCarViewModel.CarMake);
-                var car = await _context.Cars.FirstOrDefaultAsync(c => c.Make == userCarViewModel.CarMake);
+                var newMake = userCarViewModel.CarMake.ToString().Split('-')[0].Trim().Replace(' ', ';');
+                var car = await _context.Cars.FirstOrDefaultAsync(c => c.Make == newMake);
 
                 if(user != null && car != null)
                 {
@@ -104,6 +105,9 @@ namespace AmpRageRepo.Controllers
                     _context.Add(userCar);
 
                     await _context.SaveChangesAsync();
+
+                    return RedirectToAction("CreatePath", "Path", user);
+
                 }
                 else
                 {
@@ -114,8 +118,7 @@ namespace AmpRageRepo.Controllers
             {
                 throw new Exception(e.Message);
             }
-
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("CreatePath", "Path");
         }
         // GET: Users/Create
         public IActionResult Create()
@@ -143,7 +146,7 @@ namespace AmpRageRepo.Controllers
                 _context.Add(user);
 
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("CreatePath", "Path", user);
             }
 
             return View();

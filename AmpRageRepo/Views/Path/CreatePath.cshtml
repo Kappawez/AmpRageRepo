@@ -6,7 +6,7 @@
 <a class="logoamprage" style="text-align: center" asp-area="" asp-controller="Path" asp-action="CreatePath"><h1 class="display-3 pulse"><img src="~/fav1.png" width="60" height="60" /><b>A</b>mp<b>R</b>age</h1></a>
 
 
-<div id="currentUserDiv" class="float-right text-white" style="margin-right: 10px">Inloggad som: DennaSkaAldrigSynas</div><br />
+<div id="currentUserDiv" class="float-right text-white" style="margin-right: 20px;">Inloggad som: DennaSkaAldrigSynas</div><br />
 <div class="dropdown dropleft float-right" style="margin-right: 10px">
     <button id="loginButton" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Logga in <span class="glyphicon glyphicon-log-in"></span></button>
     <div class="dropdown-menu" style="width: 250px; padding: 10px;">
@@ -73,19 +73,66 @@
         </div>
     </div>
 </div>
-<a asp-area="" asp-controller="Path" asp-action="CreatePath"><button id="logoutButton" class="btn btn-danger float-right">Logga ut <span class="glyphicon glyphicon-log-in"></span></button></a>
+
+<a asp-area="" asp-controller="Path" asp-action="CreatePath"><button id="logoutButton" class="btn btn-danger float-right">Logga ut</button></a>
+
+<div class="dropdown dropleft float-right" style="margin-right: 10px">
+    <button id="addCarButton" class="btn btn-success dropdown-toggle" data-toggle="collapse" data-target="#collapsingAddCarDiv">Lägg till bil</button>
+
+    <div id="collapsingAddCarDiv" class="dropdown-menu" style="width: 340px; padding: 10px;">
+
+        <div id="dropdown-content-reg">
+            <form asp-controller="Users" asp-action="AddCarToUser">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @{var userId = Model.User.Id;}
+                <input type="hidden" asp-for="@userId" />
+                <div class="form-group" id="brandAdd" style="width:300px">
+                    <p class="control-label">Car brand:</p>
+                    <select asp-for="CarBrand" id="CarBrandAdd" class="form-control rounded-pill" style="width:300px">
+                        @foreach (var item in Model.AllCarBrands)
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group" id="makeAdd" >
+                    <select asp-for="CarMake" id="CarMakeAdd" class="form-control rounded-pill" style="width:300px">
+                        @{var arrayOfCars = Model.AllCars.ToArray(); }
+                        @{var listOfBrand = new List<string>();}
+                        @for (int i = 0; i < arrayOfCars.Count(); i++)
+                        {
+                            var allCarsWithSameBrand = Model.AllCars.Where(x => x.Text == arrayOfCars[i].Text).ToList();
+                            if (!listOfBrand.Contains(arrayOfCars[i].Text))
+                            {
+                                listOfBrand.Add(arrayOfCars[i].Text);
+                                <optgroup label="@arrayOfCars[i].Text">
+                                    @for (int a = 0; a < allCarsWithSameBrand.Count(); a++)
+                                    {
+                                        <option value="@allCarsWithSameBrand[a].Value">@allCarsWithSameBrand[a].Value</option>
+                                    }
+                                </optgroup>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-success" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
 <div class="container">
-    
+
     <div class="row">
         <div class="col" style="margin-top: 50px;">
             <b>Sök din resa:</b>
             <form asp-action="CreatePath">
                 <div asp-validation-summary="ModelOnly" class="text-danger" id="first"></div>
-
                 <div class="form-group" style="width:400px; color:white;">
-
                     <input asp-for="Origin" class="form-control rounded-pill" placeholder="Startposition" />
                     <span asp-validation-for="Origin" class="text-danger"></span>
                 </div>
@@ -98,12 +145,12 @@
 
                 <div class="form-group container" id="brand">
                     <div class="row">
-                    <div id="MyCarsRadios" class="col">
-                        <input type="radio" id="radioMyCars" class="" style="margin: 5px">Mina bilar<br />
-                    </div>
-                    <div id="AllCarsRadios" class="col">
-                        <input type="radio" id="radioAllCars" class="" style="margin: 5px">Alla bilar
-                    </div>
+                        <div id="MyCarsRadios" class="col">
+                            <input type="radio" id="radioMyCars" class="" style="margin: 5px">Mina bilar<br />
+                        </div>
+                        <div id="AllCarsRadios" class="col">
+                            <input type="radio" id="radioAllCars" class="" style="margin: 5px">Alla bilar
+                        </div>
                     </div>
                 </div>
 
@@ -167,7 +214,7 @@
                 </div>
                 <div class="form-group">
                     <p class="control-label">
-                        <input type="submit" value="Search" class="btn btn-primary" />
+                        <input type="submit" value="Sök" class="btn btn-primary" />
                     </p>
                 </div>
             </form>
@@ -195,6 +242,17 @@
                 var selectedVal = this.value;
                 $("#allCarMakes").show();
                 $('#AllCarMake').html($optgroups.filter('[label="' + selectedVal + '"]'));
+            });
+        });
+
+         $("#addCarButton").on('click', function () {
+            var $optgroups = $('#CarMakeAdd > optgroup');
+            $("#makeAdd").hide();
+
+            $("#CarBrandAdd").on("change", function () {
+                var selectedVal = this.value;
+                $("#makeAdd").show();
+                $('#CarMakeAdd').html($optgroups.filter('[label="' + selectedVal + '"]'));
             });
         });
     </script>
@@ -245,8 +303,8 @@
                 $("#brand").hide()
                 $("#loginButton").show();
                 $("#logoutButton").hide();
-            $("#myCarMakes").hide();
-
+                $("#myCarMakes").hide();
+                $("#addCarButton").hide();
             } else {
                 document.getElementById('currentUserDiv').innerHTML = "Inloggad som: @Model.User.Name"
                 $("#brand").show()
@@ -256,6 +314,7 @@
                 $("#loginButton").hide();
                 $("#logoutButton").show();
                 $("#allCarBrands").hide();
+                $("#addCarButton").show();
             }
         }
     </script>
