@@ -151,7 +151,7 @@ namespace AmpRageRepo.Controllers
                 {
                     //A path could have more than 20 waypoints
                     //Temp solution to prevent infinite loops
-                    if (loop >= 14)
+                    if (loop >= 9)
                         throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
 
                     loop++;
@@ -206,7 +206,10 @@ namespace AmpRageRepo.Controllers
             try
             {
                 if (path.IgnoreRange == true)
-                    return true;
+                {
+                    path.Arrived = true;
+                    return false;
+                }
 
                 List<Step> stepList = new List<Step>();
 
@@ -526,7 +529,7 @@ namespace AmpRageRepo.Controllers
 
                     if(double.TryParse(lLeft, out double x) == true)
                     {
-                        request = $"json?query=charging+station&location={location}&radius=50000&key={apiKey}";
+                        request = $"json?query=charging+station&location={location}&radius=10000&key={apiKey}";
                     }
                 }
 
