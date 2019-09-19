@@ -14,7 +14,7 @@ namespace AmpRageRepo.Models
 {
     public class LicensePlateSearcher
     {
-        static AmpContext _contex = new AmpContext();
+        static readonly AmpContext _contex = new AmpContext();
 
         public static Car CheckForCarInDatabase(string carBrand, string carMake)
         {

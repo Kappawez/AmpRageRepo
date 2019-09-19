@@ -41,14 +41,15 @@ namespace AmpRageRepo.Controllers
                 {
                     Text = x.Brand,
                     Value = x.Make.ToString().Replace(';', ' ') + $" - ({x.Range}km)"
-                })
+                }),
+                Cars = _context.Cars.ToList()
             };
             if (user.Name == null)
             {
                 path.User.Name = "Gäst";
             } else
             {
-                path.User = _context.Users.Where(x => x.Name == user.Name && x.Phone == user.Phone && x.Password == user.Password).FirstOrDefault();
+                path.User = _context.Users.Where(x => x.Name == user.Name && x.Phone == user.Phone && x.Password == user.Password).Include(x => x.UserCars).ThenInclude(x => x.Car).FirstOrDefault();
             }
             return View(path);
         }
