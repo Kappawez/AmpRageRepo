@@ -119,6 +119,7 @@ namespace AmpRageRepo.Controllers
                 path.Car = LicensePlateSearcher.CheckForCarInDatabase(path.CarBrand, path.CarMake);
                 if (path.Car == null)
                 {
+                    path.Car = new Car { Capacity = 70 };
                     path.RangeKm = 350;
                 }
                 else
@@ -142,15 +143,15 @@ namespace AmpRageRepo.Controllers
                     //A path could have more than 20 waypoints
                     //Temp solution to prevent infinite loops
                     if (x >= 9)
-                        throw new Exception();
+                        throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
 
                     x++;
                     direction = await Google_GetDirection(path);
                 }
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
+                throw new Exception(e.Message);
             }
             return RedirectToAction(nameof(DisplayPath), path);
         }
@@ -214,7 +215,7 @@ namespace AmpRageRepo.Controllers
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                    throw new Exception(e.Message);
             }
 
             return true;
