@@ -51,19 +51,11 @@ namespace AmpRageRepo.Models
             }
             return listOfModels.OrderBy(x => x);
         }
+
         internal static IEnumerable<Car> GetAllCars()
         {
-            var listOfCars = new List<Car>();
-            var list = new List<string>();
-            foreach (var car in _contex.Cars.ToList())
-            {
-                if (list.Contains(car.Brand) == false)
-                {
-                    list.Add(car.Brand);
-                    listOfCars.Add(car);
-                }
-            }
-            return listOfCars.OrderBy(x => x.Brand);
+           return _contex.Cars.ToList();
+
         }
     }
 }
