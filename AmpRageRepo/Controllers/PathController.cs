@@ -46,7 +46,7 @@ namespace AmpRageRepo.Controllers
             };
             if (user.Name == null)
             {
-                path.User.Name = "Gäst";
+                path.User.Name = "Gästläge";
             } else
             {
                 path.User = _context.Users.Where(x => x.Name == user.Name && x.Phone == user.Phone && x.Password == user.Password).Include(x => x.UserCars).ThenInclude(x => x.Car).FirstOrDefault();
@@ -91,9 +91,9 @@ namespace AmpRageRepo.Controllers
                     direction = await Google_GetDirection(path);
                 }
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
+                throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP", e);
             }
             return RedirectToAction(nameof(DisplayPath), path);
         }

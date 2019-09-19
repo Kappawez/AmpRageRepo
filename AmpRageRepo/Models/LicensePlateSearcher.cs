@@ -18,8 +18,8 @@ namespace AmpRageRepo.Models
 
         public static Car CheckForCarInDatabase(string carBrand, string carMake)
         {
-            //var newCarMake = carMake.Split('-')[0].Trim().Replace(' ', ';');
-            var car = _contex.Cars.Where(x => /*x.Brand == carBrand &&*/ x.Make == carMake).FirstOrDefault();
+            var newCarMake = carMake.Split('-')[0].Trim().Replace(' ', ';');
+            var car = _contex.Cars.Where(x => /*x.Brand == carBrand &&*/ x.Make == newCarMake).FirstOrDefault();
             //var nbCars = _contex.Cars.Count();
           
             return car;
