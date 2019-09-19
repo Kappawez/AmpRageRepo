@@ -52,6 +52,11 @@ namespace AmpRageRepo.Models
             return listOfModels.OrderBy(x => x);
         }
 
+        internal static IEnumerable<object> GetAllCarsByUser()
+        {
+            throw new NotImplementedException();
+        }
+
         internal static IEnumerable<Car> GetAllCars()
         {
            return _contex.Cars.ToList();

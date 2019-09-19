@@ -24,6 +24,12 @@ namespace AmpRageRepo.Controllers
             return View(await _context.Users.Include(x => x.UserCars).ToListAsync());
         }
 
+        public async Task<IActionResult> Login(UserViewModel UserViewModel)
+        {
+            var user = _context.Users.Where(x => x.Name == UserViewModel.Name && x.Password == UserViewModel.Password).FirstOrDefault();
+            return RedirectToAction("CreatePath", "Path", user);
+        }
+
         // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -226,6 +232,11 @@ namespace AmpRageRepo.Controllers
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.Id == id);
+        }
+
+        internal static void LogIn(UserViewModel inputedUser)
+        {
+           // _context.Users.Any(x => x.Name == inputedUser.Name && x.Password == inputedUser.Password);
         }
     }
 }

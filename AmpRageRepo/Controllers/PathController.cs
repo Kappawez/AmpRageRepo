@@ -22,10 +22,11 @@ namespace AmpRageRepo.Controllers
 
         public static string apiKey = "AIzaSyBhIgKBChJZ9HwlAS5FdKkMFKuneDc8RjY";
 
-        public IActionResult CreatePath()
+        public IActionResult CreatePath(UserViewModel user)
         {
             var path = new Path()
             {
+                User = new User() { Name = "" },
                 AllCarBrands = LicensePlateSearcher.GetAllBrands().Select(x => new SelectListItem
                 {
                     Text = x,
@@ -40,8 +41,15 @@ namespace AmpRageRepo.Controllers
                 {
                     Text = x.Brand,
                     Value = x.Make.ToString().Replace(';', ' ') + $" - ({x.Range}km)"
-        })
+                })
             };
+            if (user.Name == null)
+            {
+                path.User.Name = "Gäst";
+            } else
+            {
+                path.User = _context.Users.Where(x => x.Name == user.Name && x.Phone == user.Phone && x.Password == user.Password).FirstOrDefault();
+            }
             return View(path);
         }
         [HttpPost]
