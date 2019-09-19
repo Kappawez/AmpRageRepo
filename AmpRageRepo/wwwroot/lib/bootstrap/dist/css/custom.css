@@ -15,7 +15,9 @@
     }
 
 body {
-    background-image: url("/Amp4.jpg");
+    background-image: url("D:/Home/Site/wwwroot/wwwroot/img/Amp4.jpg");
+    background-image: url("../../../../img/Amp4.jpg");
+    background-color: black;
     height: 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -24,6 +26,122 @@ body {
     margin: 0;
     width: 100%;
 }
+
+
+.pulse {
+    animation: pulse 1s infinite;
+    animation-delay: 2s;
+    animation-duration: 3s;
+    margin: 0 auto;
+    display: table;
+    margin-top: 5px;
+    animation-direction: alternate;
+    -webkit-animation-name: pulse;
+    animation-name: pulse;
+}
+
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-transform: scale(1);
+    }
+
+    50% {
+        -webkit-transform: scale(1.1);
+    }
+
+    100% {
+        -webkit-transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.banner {
+    padding: 16em 0 13em 0;
+    background-attachment: fixed;
+    background-image: url("images/overlay.png"), url("../images/banner.jpg");
+    background-position: center top;
+    background-size: cover;
+    line-height: 1.75;
+    text-align: center;
+    -webkit-filter: brightness(3);
+    filter: brightness(3);
+    -o-filter: brightness(3);
+    -moz-filter: brightness(3);
+    z-index: -1;
+}
+
+.flashit {
+    -webkit-animation: flash ease-out 10s infinite;
+    -moz-animation: flash ease-out 10s infinite;
+    animation: flash ease-out 10s infinite;
+    animation-delay: 2s;
+}
+
+@-webkit-keyframes flash {
+    0% {
+        opacity: 1;
+    }
+
+    2% {
+        opacity: 0;
+    }
+
+    3% {
+        opacity: 0.6;
+    }
+
+    4% {
+        opacity: 0.2;
+    }
+
+    6% {
+        opacity: 0.9;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes flash {
+    0% {
+        opacity: 1;
+    }
+
+    2% {
+        opacity: 0;
+    }
+
+    3% {
+        opacity: 0.6;
+    }
+
+    4% {
+        opacity: 0.2;
+    }
+
+    6% {
+        opacity: .9;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
 
 /*.dropdown-menu {
     display: grid;
@@ -65,7 +183,7 @@ body {
     width: 50%;
     overflow: hidden;*/
     grid-column: span 1;
-    padding: 50px;
+    padding: 5px;
 }
 .grid-item2 {
     /*flex: 0 0 65%;*/
