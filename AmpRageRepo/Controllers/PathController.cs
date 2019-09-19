@@ -205,23 +205,35 @@ namespace AmpRageRepo.Controllers
                 throw new Exception(e.Message);
             }
         }
-        private async Task<double> GetEmissionsOfCharging(ChargingStationRootObject charging, Path path)
+        private async Task<double?> GetEmissionsOfCharging(ChargingStationRootObject charging, Path path)
         {
             //https://www.rensmart.com/Calculators/KWH-to-CO2
             var country = charging.AddressInfo.Country.Title; //Sweden
             var countryEmissions = await _context.CountryEmissions.FirstOrDefaultAsync(y => y.Country.ToUpper() == country.ToUpper()); //g/co2 per kWh
-            var kwh = GetCurrentBattery(path);
+
+            if (countryEmissions == null)
+                return null;
+
+            var currentBattery = GetCurrentBattery(path); //kWh
+            var maxBattery = (double)path.Car.Capacity; //kWh
+            var batteryDiff = maxBattery - currentBattery; //kWh
             var co2 = countryEmissions.KgCo2Kwh; //g/co2
-            var emissions = kwh * co2; //g co2 to charge
+            var emissions = batteryDiff * co2; //g co2 to charge
 
             return emissions;
         }
-        private int ChargingCalculator(ChargingStationRootObject chargingStation, Path path)
+        private int? ChargingCalculator(ChargingStationRootObject chargingStation, Path path)
         {
-            var carBattery = GetCurrentBattery(path, "KW");
-            //Choose the heighest capacity connection
             var stationCapacity = chargingStation.Connections.Max(x => x.PowerKW); //kW
-            int timeToCharge = (int)Math.Round(carBattery / stationCapacity);
+
+            if (stationCapacity == null)
+                return null;
+
+            var maxBattery = (double)path.Car.Capacity * 60 * 60; //kWh -> kW
+            var currentBattery = GetCurrentBattery(path, "KW");
+            var batteryDiff = maxBattery - currentBattery;
+            //Choose the heighest capacity connection
+            var timeToCharge = (int)Math.Round(batteryDiff / (double)stationCapacity);
 
             return timeToCharge;
         }
