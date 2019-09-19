@@ -140,7 +140,7 @@ namespace AmpRageRepo.Models
         public Level Level { get; set; }
         public int Amps { get; set; }
         public int Voltage { get; set; }
-        public double PowerKW { get; set; }
+        public double? PowerKW { get; set; }
         public int? CurrentTypeID { get; set; }
         public CurrentType CurrentType { get; set; }
         public int? Quantity { get; set; }

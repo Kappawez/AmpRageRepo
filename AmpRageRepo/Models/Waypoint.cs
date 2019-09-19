@@ -10,9 +10,9 @@ namespace AmpRageRepo.Models
         public string Address { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public int TimeToCharge { get; set; }
+        public int? TimeToCharge { get; set; }
         public string CoordString { get; set; }
-        public double Emissions { get; set; }
+        public decimal? Emissions { get; set; }
 
         public ChargingStationRootObject ChargingStation { get; set; }
     }
