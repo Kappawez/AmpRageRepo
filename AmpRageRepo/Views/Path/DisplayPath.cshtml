@@ -69,11 +69,14 @@
     <p hidden id="dest">"@Model.Destination"</p>
 
     <ul hidden id="wps">
-        @foreach (var item in Model.WayPointStrings)
+        @if (Model.IgnoreRange == false)
         {
-            <li>
-                @Html.Raw(item)
-            </li>
+            @foreach (var item in Model.WayPointStrings)
+            {
+                <li>
+                    @Html.Raw(item)
+                </li>
+            }
         }
     </ul>
 
