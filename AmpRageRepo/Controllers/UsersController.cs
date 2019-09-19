@@ -26,7 +26,7 @@ namespace AmpRageRepo.Controllers
 
         public async Task<IActionResult> Login(UserViewModel UserViewModel)
         {
-            var user = _context.Users.Where(x => x.Name == UserViewModel.Name && x.Password == UserViewModel.Password).FirstOrDefault();
+            var user = await _context.Users.Where(x => x.Name == UserViewModel.Name && x.Password == UserViewModel.Password).FirstOrDefaultAsync();
             return RedirectToAction("CreatePath", "Path", user);
         }
 

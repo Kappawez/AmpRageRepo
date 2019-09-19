@@ -24,6 +24,7 @@ namespace AmpRageRepo.Models
         public string CarBrand { get; set; }
         public string CarMake { get; set; }
         public Car Car { get; set; }
+        public bool IgnoreRange { get; set; }
 
         public int RangeKm { get; set; } //km
         public double EffectiveRangeM { get; set; } //MaxRangeM - MinRangeM

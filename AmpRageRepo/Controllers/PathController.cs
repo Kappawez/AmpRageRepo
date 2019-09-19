@@ -22,6 +22,60 @@ namespace AmpRageRepo.Controllers
 
         public static string apiKey = "AIzaSyBhIgKBChJZ9HwlAS5FdKkMFKuneDc8RjY";
 
+        public async Task<IActionResult> Snabb()
+        {
+            var path = new Path
+            {
+                Car = new Car { Capacity = 75 },
+                RangeKm = 350,
+                Origin = "Sundsvall",
+                CurrentRangeM = 10
+            };
+
+            path.MaxRangeM = (path.RangeKm * 1000);    //km -> m
+            path.MinRangeM = (path.RangeKm * 1000 * 0.2); //20% of MaxRangeM
+            path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM; //diff
+            path.CurrentRangeM = path.MaxRangeM * (path.CurrentRangeM / 100);  //50 * 1000;
+
+            if(path.Destination == null || path.Destination == string.Empty)
+            {
+                try
+                {
+                    path.IgnoreRange = true;
+                    await GetChargingStationLocationAsDestination(path);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message);
+                }
+            }
+
+
+            var direction = await Google_GetDirection(path);
+
+            try
+            {
+                int x = 0;
+
+                while (await EvaluateDirection(direction, path) == false)
+                {
+                    //A path could have more than 20 waypoints
+                    //Temp solution to prevent infinite loops
+                    if (x >= 9)
+                        throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
+
+                    x++;
+                    direction = await Google_GetDirection(path);
+                }
+            }
+            catch(Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+
+            return RedirectToAction(nameof(DisplayPath), path);
+        }
+
         public IActionResult CreatePath(UserViewModel user)
         {
             var path = new Path()
@@ -46,10 +100,12 @@ namespace AmpRageRepo.Controllers
             if (user.Name == null)
             {
                 path.User.Name = "Gäst";
-            } else
+            }
+            else
             {
                 path.User = _context.Users.Where(x => x.Name == user.Name && x.Phone == user.Phone && x.Password == user.Password).FirstOrDefault();
             }
+
             return View(path);
         }
         [HttpPost]
@@ -100,38 +156,7 @@ namespace AmpRageRepo.Controllers
         {
             return View(path);
         }
-        private async Task<DirectionRootObject> Google_GetDirection(Path path)
-        {
-            DirectionRootObject rootObject = null;
-
-            string request = GetRequestString(path);
-
-            using (var client = new HttpClient())
-            {
-                var responseTask = client.GetAsync(request);
-
-                responseTask.Wait();
-                //To store result of web api response.   
-                var result = responseTask.Result;
-
-                if (result.IsSuccessStatusCode)
-                {
-                    var json = await result.Content.ReadAsStringAsync();
-                    var settings = new JsonSerializerSettings();
-
-                    try
-                    {
-                        rootObject = JsonConvert.DeserializeObject<DirectionRootObject>(json, settings);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception(e.Message);
-                    }
-                }
-            }
-
-            return rootObject;
-        }
+       
         private string GetRequestString(Path path)
         {
             //documentation: https://developers.google.com/maps/documentation/directions/intro
@@ -141,15 +166,19 @@ namespace AmpRageRepo.Controllers
             request += $"origin={path.Origin}";
             request += $"&destination={path.Destination}";
 
-            for (int i = 0; i < path.Waypoints.Count; i++)
+            if(path.IgnoreRange == false)
             {
-                string coord = path.Waypoints[i].CoordString;
+                for (int i = 0; i < path.Waypoints.Count; i++)
+                {
+                    string coord = path.Waypoints[i].CoordString;
 
-                if (i == 0)
-                    request += $"&waypoints={coord}";
-                if (i > 0)
-                    request += $"|{coord}";
+                    if (i == 0)
+                        request += $"&waypoints={coord}";
+                    if (i > 0)
+                        request += $"|{coord}";
+                }
             }
+
 
             request += $"&key={apiKey}";
 
@@ -159,6 +188,9 @@ namespace AmpRageRepo.Controllers
         {
             try
             {
+                if (path.IgnoreRange == true)
+                    return true;
+
                 List<Step> stepList = new List<Step>();
 
                 var currentRoute = direction.routes[direction.routes.Count - 1];
@@ -170,7 +202,7 @@ namespace AmpRageRepo.Controllers
 
                     if ((path.CurrentRangeM - step.distance.value) <= 0)
                     {
-                        return await FindChargingStation(stepList, path);
+                        return await FindChargingStationOnStep(stepList, path);
                     }
                     else
                     {
@@ -185,13 +217,25 @@ namespace AmpRageRepo.Controllers
 
             return true;
         }
-        private async Task<bool> FindChargingStation(List<Step> steps, Path path)
+        private async Task<bool> FindChargingStationOnStep(List<Step> steps, Path path)
         {
             try
             {
                 //TODO get a list of coordEntity
-                var waypoint = await GetChargingStationLocation(steps, path);
+                var waypoint = await GetChargingStationLocationAsStep(steps, path);
+                await SetupWaypoint(path, waypoint);
 
+                return false;
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        private async Task<bool> SetupWaypoint(Path path, Waypoint waypoint)
+        {
+            try
+            {
                 //TODO get a list of chargintStation for each coordEntity
                 //TODO choose chargintStation based on other things than shortest route (timeToCharge etc)
                 var chargingStation = await OpenChargeMap_GetChargingStationInfo(waypoint);
@@ -211,95 +255,33 @@ namespace AmpRageRepo.Controllers
                 //TODO logic for charging car
                 path.CurrentRangeM = path.EffectiveRangeM;
 
-                return false;
+                return true;
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
-        private async Task<double?> GetEmissionsOfCharging(ChargingStationRootObject charging, Path path)
+        private async Task<Waypoint> GetChargingStationLocationAsDestination(Path path)
         {
-            //https://www.rensmart.com/Calculators/KWH-to-CO2
-            var country = charging.AddressInfo.Country.Title; //Sweden
-            var countryEmissions = await _context.CountryEmissions.FirstOrDefaultAsync(y => y.Country.ToUpper() == country.ToUpper()); //g/co2 per kWh
+            var chargingLocations = await Google_SearchForChargingStations(path.Origin);
+            var chargingLocation = chargingLocations.results[0];
 
-            if (countryEmissions == null)
-                return null;
-
-            var currentBattery = GetCurrentBattery(path); //kWh
-            var maxBattery = (double)path.Car.Capacity; //kWh
-            var batteryDiff = maxBattery - currentBattery; //kWh
-            var co2 = countryEmissions.KgCo2Kwh; //g/co2
-            var emissions = batteryDiff * co2; //g co2 to charge
-
-            return emissions;
-        }
-        private int? ChargingCalculator(ChargingStationRootObject chargingStation, Path path)
-        {
-            var stationCapacity = chargingStation.Connections.Max(x => x.PowerKW); //kW
-
-            if (stationCapacity == null)
-                return null;
-
-            var maxBattery = (double)path.Car.Capacity * 60 * 60; //kWh -> kW
-            var currentBattery = GetCurrentBattery(path, "KW");
-            var batteryDiff = maxBattery - currentBattery;
-            //Choose the heighest capacity connection
-            var timeToCharge = (int)Math.Round(batteryDiff / (double)stationCapacity);
-
-            return timeToCharge;
-        }
-        private double GetCurrentBattery(Path path, string Unit = "KWH")
-        {
-            //current battery(kWh) / max battery(kWh) = current range(m) / max range(m) ->
-            //current battery(kWh) = (current range(m) / max range(m)) * max battery(kWh) 
-            var maxBattery = (double)path.Car.Capacity;
-            var quotient = path.CurrentRangeM / path.EffectiveRangeM;
-            var currentBattery = Math.Clamp((maxBattery * quotient), 0, maxBattery);
-
-            if (Unit == "W")
-                currentBattery = currentBattery * (1000 * 60 * 60);
-            if (Unit == "KW")
-                currentBattery = currentBattery * (60 * 60);
-
-            return currentBattery;
-        }
-        private async Task<ChargingStationRootObject> OpenChargeMap_GetChargingStationInfo(Waypoint coordEntity)
-        {
-            //documentation https://openchargemap.org/site/develop/api
-            List<ChargingStationRootObject> rootObjects = null;
-
-            using (var client = new HttpClient())
+            var waypoint = new Waypoint
             {
-                //client.BaseAddress = new Uri("https://api.openchargemap.io/v3/poi/?output=json");
+                Latitude = chargingLocation.geometry.location.lat,
+                Longitude = chargingLocation.geometry.location.lng
+            };
 
-                var responseTask = client.GetAsync($"https://api.openchargemap.io/v3/poi/?output=json&maxresults=1&" +
-                    $"latitude={coordEntity.Latitude}&longitude={coordEntity.Longitude}");
+            await SetupWaypoint(path, waypoint);
 
-                responseTask.Wait();
-                //To store result of web api response.   
-                var result = responseTask.Result;
+            waypoint.Address = waypoint.ChargingStation.AddressInfo.Title;
 
-                if (result.IsSuccessStatusCode)
-                {
-                    var json = await result.Content.ReadAsStringAsync();
-                    var settings = new JsonSerializerSettings();
+            path.Destination = waypoint.ChargingStation.AddressInfo.Latitude + "," + waypoint.ChargingStation.AddressInfo.Longitude;
 
-                    try
-                    {
-                        rootObjects = JsonConvert.DeserializeObject<List<ChargingStationRootObject>>(json, settings);
-                    }
-                    catch (Exception e)
-                    {
-
-                        throw new Exception(e.Message);
-                    }
-                }
-            }
-            return rootObjects[0];
+            return waypoint;
         }
-        private async Task<Waypoint> GetChargingStationLocation(List<Step> steps, Path path)
+        private async Task<Waypoint> GetChargingStationLocationAsStep(List<Step> steps, Path path)
         {
             //documentation: https://developers.google.com/places/web-service/search
             //Magic numbers to not do too many api requests
@@ -351,39 +333,6 @@ namespace AmpRageRepo.Controllers
 
             return null;
         }
-        private async Task<TextSearchRootObject> Google_SearchForChargingStations(string coord)
-        {
-            TextSearchRootObject rootObject = null;
-
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri("Https://maps.googleapis.com/maps/api/place/textsearch/");
-
-                var responseTask = client.GetAsync(
-                    $"json?query=charging+station&location={coord}&radius=10000&key={apiKey}"
-                    );
-
-                responseTask.Wait();
-                //To store result of web api response.   
-                var result = responseTask.Result;
-
-                if (result.IsSuccessStatusCode)
-                {
-                    var json = await result.Content.ReadAsStringAsync();
-                    var settings = new JsonSerializerSettings();
-
-                    try
-                    {
-                        rootObject = JsonConvert.DeserializeObject<TextSearchRootObject>(json, settings);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new Exception(e.Message);
-                    }
-                }
-            }
-            return rootObject;
-        }
 
         private string GetMaxCoord(List<Waypoint> coords, Path path)
         {
@@ -425,6 +374,159 @@ namespace AmpRageRepo.Controllers
 
             return lastLat + "," + lastLng;
         }
+
+        #region Calc
+        private async Task<decimal?> GetEmissionsOfCharging(ChargingStationRootObject charging, Path path)
+        {
+            //https://www.rensmart.com/Calculators/KWH-to-CO2
+            var country = charging.AddressInfo.Country.Title; //Sweden
+            var countryEmissions = await _context.CountryEmissions.FirstOrDefaultAsync(y => y.Country.ToUpper() == country.ToUpper()); //g/co2 per kWh
+
+            if (countryEmissions == null)
+                return null;
+
+            var currentBattery = GetCurrentBattery(path); //kWh
+            var maxBattery = (double)path.Car.Capacity; //kWh
+            var batteryDiff = maxBattery - currentBattery; //kWh
+            var co2 = countryEmissions.KgCo2Kwh; //g/co2
+            var emissions = batteryDiff * co2; //g co2 to charge
+
+            return Convert.ToDecimal(Math.Round(emissions, 4));
+        }
+        private int? ChargingCalculator(ChargingStationRootObject chargingStation, Path path)
+        {
+            var stationCapacity = (double?)chargingStation.Connections.Max(x => x.PowerKW); //kW
+
+            if (stationCapacity == null)
+                return null;
+
+            var maxBattery = (double)path.Car.Capacity * 60 * 60; //kWh -> kW
+            var currentBattery = GetCurrentBattery(path, "KW");
+            var batteryDiff = maxBattery - currentBattery;
+            //Choose the heighest capacity connection
+            var timeToCharge = (int)Math.Round(batteryDiff / (double)stationCapacity);
+
+            return timeToCharge;
+        }
+        private double GetCurrentBattery(Path path, string Unit = "KWH")
+        {
+            //current battery(kWh) / max battery(kWh) = current range(m) / max range(m) ->
+            //current battery(kWh) = (current range(m) / max range(m)) * max battery(kWh) 
+            var maxBattery = (double)path.Car.Capacity;
+            var quotient = path.CurrentRangeM / path.EffectiveRangeM;
+            var currentBattery = Math.Clamp((maxBattery * quotient), 0, maxBattery);
+
+            if (Unit == "W")
+                currentBattery = currentBattery * (1000 * 60 * 60);
+            if (Unit == "KW")
+                currentBattery = currentBattery * (60 * 60);
+
+            return currentBattery;
+        }
+        #endregion
+
+        #region ApiRequests
+        private async Task<DirectionRootObject> Google_GetDirection(Path path)
+        {
+            DirectionRootObject rootObject = null;
+
+            string request = GetRequestString(path);
+
+            using (var client = new HttpClient())
+            {
+                var responseTask = client.GetAsync(request);
+
+                responseTask.Wait();
+                //To store result of web api response.   
+                var result = responseTask.Result;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var json = await result.Content.ReadAsStringAsync();
+                    var settings = new JsonSerializerSettings();
+
+                    try
+                    {
+                        rootObject = JsonConvert.DeserializeObject<DirectionRootObject>(json, settings);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception(e.Message);
+                    }
+                }
+            }
+
+            return rootObject;
+        }
+        private async Task<ChargingStationRootObject> OpenChargeMap_GetChargingStationInfo(Waypoint coordEntity)
+        {
+            //documentation https://openchargemap.org/site/develop/api
+            List<ChargingStationRootObject> rootObjects = null;
+
+            using (var client = new HttpClient())
+            {
+                //client.BaseAddress = new Uri("https://api.openchargemap.io/v3/poi/?output=json");
+
+                var responseTask = client.GetAsync($"https://api.openchargemap.io/v3/poi/?output=json&maxresults=1&" +
+                    $"latitude={coordEntity.Latitude}&longitude={coordEntity.Longitude}");
+
+                responseTask.Wait();
+                //To store result of web api response.   
+                var result = responseTask.Result;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var json = await result.Content.ReadAsStringAsync();
+                    var settings = new JsonSerializerSettings();
+
+                    try
+                    {
+                        rootObjects = JsonConvert.DeserializeObject<List<ChargingStationRootObject>>(json, settings);
+                    }
+                    catch (Exception e)
+                    {
+
+                        throw new Exception(e.Message);
+                    }
+                }
+            }
+            return rootObjects[0];
+        }
+
+        private async Task<TextSearchRootObject> Google_SearchForChargingStations(string coord)
+        {
+            TextSearchRootObject rootObject = null;
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("Https://maps.googleapis.com/maps/api/place/textsearch/");
+
+                var responseTask = client.GetAsync(
+                    $"json?query=charging+station&location={coord}&radius=10000&key={apiKey}"
+                    );
+
+                responseTask.Wait();
+                //To store result of web api response.   
+                var result = responseTask.Result;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var json = await result.Content.ReadAsStringAsync();
+                    var settings = new JsonSerializerSettings();
+
+                    try
+                    {
+                        rootObject = JsonConvert.DeserializeObject<TextSearchRootObject>(json, settings);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new Exception(e.Message);
+                    }
+                }
+            }
+            return rootObject;
+        }
+        #endregion
 
         #region Decode
         /// <summary>
