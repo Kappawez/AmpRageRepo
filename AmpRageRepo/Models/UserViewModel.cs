@@ -31,8 +31,6 @@ namespace AmpRageRepo.Models
         [Display(Name = "Confirm password")]
         public string ConfirmPassword { get; set; }
 
-        public int MyProperty { get; set; }
-
         public string CarBrand { get; set; }
         public string CarMake { get; set; }
 

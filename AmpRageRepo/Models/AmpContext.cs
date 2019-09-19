@@ -17,16 +17,14 @@ namespace AmpRageRepo.Models
 
         public AmpContext(DbContextOptions<AmpContext> options) : base(options)
         {
-            Options = options;
         }
-
-        DbContextOptions<AmpContext> Options;
 
         public virtual DbSet<Car> Cars { get; set; }
         public virtual DbSet<RootObject> RootObjects { get; set; }
         public virtual DbSet<SearchedCar> SearchedCars { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserCar> UserCars { get; set; }
+        public virtual DbSet<CountryEmission> CountryEmissions { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -7,22 +7,18 @@ using AmpRageRepo.Models;
 using System.Net.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace AmpRageRepo.Controllers
 {
     public class PathController : Controller
     {
-        //public PathController(SecretController secret)
-        //{
+        private readonly AmpContext _context;
 
-        //    apiKey = secret.GetSecret("GoogleApiKey190916").Result;
-        //    //Sync(secret);
-
-        //}
-        //private async void Sync(SecretController secret)
-        //{
-        //    apiKey = await secret.GetSecret("GoogleApiKey190916");
-        //}
+        public PathController(AmpContext ampContext)
+        {
+            _context = ampContext;
+        }
 
         public static string apiKey = "AIzaSyBhIgKBChJZ9HwlAS5FdKkMFKuneDc8RjY";
 
@@ -54,14 +50,14 @@ namespace AmpRageRepo.Controllers
         {
             if (path.RangeKm == 0)
             {
-                var car = LicensePlateSearcher.CheckForCarInDatabase(path.CarBrand, path.CarMake);
-                if (car == null)
+                path.Car = LicensePlateSearcher.CheckForCarInDatabase(path.CarBrand, path.CarMake);
+                if (path.Car == null)
                 {
                     path.RangeKm = 350;
                 }
                 else
                 {
-                    path.RangeKm = car.Range;
+                    path.RangeKm = path.Car.Range;
                 }
                 path.MaxRangeM = (path.RangeKm * 1000);    //km -> m
                 path.MinRangeM = (path.RangeKm * 1000 * 0.2); //20% of MaxRangeM
@@ -90,9 +86,6 @@ namespace AmpRageRepo.Controllers
             {
                 throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
             }
-
-            path.Direction = direction;
-
             return RedirectToAction(nameof(DisplayPath), path);
         }
         public IActionResult DisplayPath(Path path)
@@ -140,9 +133,9 @@ namespace AmpRageRepo.Controllers
             request += $"origin={path.Origin}";
             request += $"&destination={path.Destination}";
 
-            for (int i = 0; i < path.WayPoints.Count; i++)
+            for (int i = 0; i < path.Waypoints.Count; i++)
             {
-                string coord = path.WayPoints[i].Latitude + "," + path.WayPoints[i].Longitude;
+                string coord = path.Waypoints[i].CoordString;
 
                 if (i == 0)
                     request += $"&waypoints={coord}";
@@ -189,21 +182,25 @@ namespace AmpRageRepo.Controllers
             try
             {
                 //TODO get a list of coordEntity
-                var coordEntity = await GetChargingStationLocation(steps, path);
+                var waypoint = await GetChargingStationLocation(steps, path);
 
                 //TODO get a list of chargintStation for each coordEntity
                 //TODO choose chargintStation based on other things than shortest route (timeToCharge etc)
-                var chargingStation = await OpenChargeMap_GetChargingStationInfo(coordEntity);
-
-                path.WayPoints.Add(coordEntity);
-                path.WayPointStrings.Add(coordEntity.Latitude + "," + coordEntity.Longitude);
-                path.ChargingStations.Add(chargingStation);
+                var chargingStation = await OpenChargeMap_GetChargingStationInfo(waypoint);
+                waypoint.ChargingStation = chargingStation;
 
                 //TODO add timeToCharge to traveltime
-                //var timeToCharge = ChargingCalculator(35.8, chargingStation);
+                waypoint.TimeToCharge = ChargingCalculator(chargingStation, path); //S
+                waypoint.Emissions = await GetEmissionsOfCharging(chargingStation, path); //g/co2
+                waypoint.CoordString = waypoint.Latitude + "," + waypoint.Longitude;
+
+                //stupid razor pages cannot loop  through WayPoints.CoordString??
+                path.WayPointStrings.Add(waypoint.CoordString);
+
+                path.Waypoints.Add(waypoint);
+                //path.ChargingStations.Add(chargingStation);
 
                 //TODO logic for charging car
-                //path.TotalRangeM += path.MaxRangeM;
                 path.CurrentRangeM = path.EffectiveRangeM;
 
                 return false;
@@ -213,28 +210,52 @@ namespace AmpRageRepo.Controllers
                 throw new Exception(e.Message);
             }
         }
-
-        private int ChargingCalculator(double carCapacity, ChargingStationRootObject chargingStation)
+        private async Task<double> GetEmissionsOfCharging(ChargingStationRootObject charging, Path path)
         {
-            double carWatt = carCapacity * 60 * 60; //Wh -> W
-            double stationWatt = chargingStation.Connections[0].PowerKW;
+            //https://www.rensmart.com/Calculators/KWH-to-CO2
+            var country = charging.AddressInfo.Country.Title; //Sweden
+            var countryEmissions = await _context.CountryEmissions.FirstOrDefaultAsync(y => y.Country.ToUpper() == country.ToUpper()); //g/co2 per kWh
+            var kwh = GetCurrentBattery(path);
+            var co2 = countryEmissions.KgCo2Kwh; //g/co2
+            var emissions = kwh * co2; //g co2 to charge
 
-            return (int)Math.Round(carWatt / stationWatt);
+            return emissions;
         }
-        private async Task<ChargingStationRootObject> OpenChargeMap_GetChargingStationInfo(CoordinateEntity coordEntity)
+        private int ChargingCalculator(ChargingStationRootObject chargingStation, Path path)
+        {
+            var carBattery = GetCurrentBattery(path, "KW");
+            //Choose the heighest capacity connection
+            var stationCapacity = chargingStation.Connections.Max(x => x.PowerKW); //kW
+            int timeToCharge = (int)Math.Round(carBattery / stationCapacity);
+
+            return timeToCharge;
+        }
+        private double GetCurrentBattery(Path path, string Unit = "KWH")
+        {
+            //current battery(kWh) / max battery(kWh) = current range(m) / max range(m) ->
+            //current battery(kWh) = (current range(m) / max range(m)) * max battery(kWh) 
+            var maxBattery = (double)path.Car.Capacity;
+            var quotient = path.CurrentRangeM / path.EffectiveRangeM;
+            var currentBattery = Math.Clamp((maxBattery * quotient), 0, maxBattery);
+
+            if (Unit == "W")
+                currentBattery = currentBattery * (1000 * 60 * 60);
+            if (Unit == "KW")
+                currentBattery = currentBattery * (60 * 60);
+
+            return currentBattery;
+        }
+        private async Task<ChargingStationRootObject> OpenChargeMap_GetChargingStationInfo(Waypoint coordEntity)
         {
             //documentation https://openchargemap.org/site/develop/api
-
             List<ChargingStationRootObject> rootObjects = null;
 
             using (var client = new HttpClient())
             {
                 //client.BaseAddress = new Uri("https://api.openchargemap.io/v3/poi/?output=json");
 
-                var responseTask = client.GetAsync(
-                    $"https://api.openchargemap.io/v3/poi/?output=json&maxresults=1&compact=true&verbose=false&" +
-                    $"latitude={coordEntity.Latitude}&longitude={coordEntity.Longitude}"
-                    );
+                var responseTask = client.GetAsync($"https://api.openchargemap.io/v3/poi/?output=json&maxresults=1&" +
+                    $"latitude={coordEntity.Latitude}&longitude={coordEntity.Longitude}");
 
                 responseTask.Wait();
                 //To store result of web api response.   
@@ -251,13 +272,14 @@ namespace AmpRageRepo.Controllers
                     }
                     catch (Exception e)
                     {
+
                         throw new Exception(e.Message);
                     }
                 }
             }
             return rootObjects[0];
         }
-        private async Task<CoordinateEntity> GetChargingStationLocation(List<Step> steps, Path path)
+        private async Task<Waypoint> GetChargingStationLocation(List<Step> steps, Path path)
         {
             //documentation: https://developers.google.com/places/web-service/search
             //Magic numbers to not do too many api requests
@@ -293,7 +315,7 @@ namespace AmpRageRepo.Controllers
                         //Choose the first result
                         //TODO return a list
                         var result = search.results[0];
-                        return new CoordinateEntity
+                        return new Waypoint
                         {
                             Address = result.formatted_address,
                             Latitude = Math.Round(result.geometry.location.lat, 6),
@@ -343,7 +365,7 @@ namespace AmpRageRepo.Controllers
             return rootObject;
         }
 
-        private string GetMaxCoord(List<CoordinateEntity> coords, Path path)
+        private string GetMaxCoord(List<Waypoint> coords, Path path)
         {
             //Returns the coordinate where range runs out
 
@@ -388,7 +410,7 @@ namespace AmpRageRepo.Controllers
         /// <summary>
         /// https://gist.github.com/shinyzhu/4617989
         /// </summary>
-        private static IEnumerable<CoordinateEntity> Decode(string encodedPoints)
+        private static IEnumerable<Waypoint> Decode(string encodedPoints)
         {
             if (string.IsNullOrEmpty(encodedPoints))
                 throw new ArgumentNullException("encodedPoints");
@@ -434,7 +456,7 @@ namespace AmpRageRepo.Controllers
 
                 currentLng += (sum & 1) == 1 ? ~(sum >> 1) : (sum >> 1);
 
-                yield return new CoordinateEntity
+                yield return new Waypoint
                 {
                     Latitude = Convert.ToDouble(currentLat) / 1E5,
                     Longitude = Convert.ToDouble(currentLng) / 1E5
