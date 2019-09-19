@@ -35,7 +35,12 @@ namespace AmpRageRepo.Controllers
                 {
                     Text = x,
                     Value = x.ToString()
-                })
+                }),
+                AllCars = LicensePlateSearcher.GetAllCars().Select(x => new SelectListItem
+                {
+                    Text = x.Brand,
+                    Value = x.Make.ToString().Replace(';', ' ') + $" - ({x.Range}km)"
+        })
             };
             return View(path);
         }
