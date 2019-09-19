@@ -1,14 +1,14 @@
-﻿    @model AmpRageRepo.Models.Path
+﻿@model AmpRageRepo.Models.Path
 
 @{
     ViewData["Title"] = "CreatePath";
 }
-    <a class="logoamprage" style="text-align: center" asp-area="" asp-controller="Path" asp-action="CreatePath"><h1 class="display-3 pulse"><img src="~/fav1.png" width="60" height="60" /><b>A</b>mp<b>R</b>age</h1></a>
+<a class="logoamprage" style="text-align: center" asp-area="" asp-controller="Path" asp-action="CreatePath"><h1 class="display-3 pulse"><img src="~/fav1.png" width="60" height="60" /><b>A</b>mp<b>R</b>age</h1></a>
 
 
-@*<div id="currentUserDiv">Inloggad som: DennaSkaAldrigSynas</div>*@
-<div class="dropdown dropleft">
-    <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Logga in <span class="glyphicon glyphicon-log-in"></span></button>
+<div id="currentUserDiv" class="float-right text-white">Inloggad som: DennaSkaAldrigSynas</div><br />
+<div class="dropdown dropleft float-right">
+    <button id="loginButton" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Logga in <span class="glyphicon glyphicon-log-in"></span></button>
     <div class="dropdown-menu" style="width: 250px;">
 
         <input type="radio" id="radioLogin" class="" style="margin: 5px">Logga in<br />
@@ -73,6 +73,7 @@
         </div>
     </div>
 </div>
+<a asp-area="" asp-controller="Path" asp-action="CreatePath"><button id="logoutButton" class="btn btn-danger float-right">Logga ut <span class="glyphicon glyphicon-log-in"></span></button></a>
 
 
 <div class="container2">
@@ -83,43 +84,60 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" id="first"></div>
 
             <div class="form-group" style="width:400px; color:white;">
-                <label class="control-label">Start</label>
 
-                <input asp-for="Origin" class="form-control rounded-pill" />
+                <input asp-for="Origin" class="form-control rounded-pill" placeholder="Startposition" />
                 <span asp-validation-for="Origin" class="text-danger"></span>
             </div>
 
             <div class="form-group" style="width:400px; color:white;">
-                <label class="control-label">Destination</label>
 
-                <input asp-for="Destination" class="form-control rounded-pill" />
+                <input asp-for="Destination" class="form-control rounded-pill" placeholder="Slutdestination" />
                 <span asp-validation-for="Destination" class="text-danger"></span>
             </div>
 
-            <div class="form-group" id="brand" style="width:400px; color:white;">
-                <div id="AllCarsRadios">
-                    <input type="radio" id="radioAllCars" class="" style="margin: 5px">Alla bilar<br />
-                </div>
+            <div class="form-group container" id="brand" style="width:400px; color:white;">
                 <div id="MyCarsRadios">
                     <input type="radio" id="radioMyCars" class="" style="margin: 5px">Mina bilar<br />
                 </div>
+                <div id="AllCarsRadios">
+                    <input type="radio" id="radioAllCars" class="" style="margin: 5px">Alla bilar
+                </div>
+            </div>
 
-                <br />
-                <p class="control-label">Bilmärke:</p>
+            <div class="form-group" id="make" style="width:400px">
 
                 <div id="allCarBrands">
                     <select asp-for="CarBrand" id="CarBrandAllCars" class="form-control rounded-pill" style="width:400px">
+                        <option value="" selected disabled>Välj din jävla bil</option>
                         @foreach (var item in Model.AllCarBrands)
                         {
                             <option value="@item.Value">@item.Text</option>
                         }
                     </select>
                 </div>
-            </div>
+                <div id="myCarMakes">
+                    <p style="color: white">Mina bilar:</p>
+                    <select asp-for="CarMake" id="MyCarMake" class="form-control rounded-pill" style="width:400px">
+                        @{var AllCars = Model.Cars; }
+                        @{var MylistOfBrand = new List<string>();}
+                        @for (int i = 0; i < Model.User.UserCars.Count(); i++)
+                        {
+                            var allCarsWithSameBrand = Model.User.UserCars.Where(x => x.Car.Brand == Model.User.UserCars[i].Car.Brand).ToList();
+                            if (!MylistOfBrand.Contains(Model.User.UserCars[i].Car.Brand))
+                            {
+                                MylistOfBrand.Add(Model.User.UserCars[i].Car.Brand);
+                                <optgroup label="@Model.User.UserCars[i].Car.Brand">
+                                    @for (int a = 0; a < allCarsWithSameBrand.Count(); a++)
+                                    {
+                                        <option value="@allCarsWithSameBrand[a].Car.Make">@allCarsWithSameBrand[a].Car.Make</option>
+                                    }
+                                </optgroup>
+                            }
+                        }
+                    </select>
+                </div>
 
-            <div class="form-group" id="make" style="width:400px">
-                <div id="allCarMakes">
-                    <p class="control-label">Bilmodell - (Räckvidd):</p>
+                <div id="allCarMakes" style="margin-top: 15px;">
                     <select asp-for="CarMake" id="AllCarMake" class="form-control rounded-pill" style="width:400px">
                         @{var arrayOfCars = Model.AllCars.ToArray(); }
                         @{var listOfBrand = new List<string>();}
@@ -140,31 +158,9 @@
                     </select>
                 </div>
             </div>
-            <div id="myCarMakes">
-                <select asp-for="CarMake" id="MyCarMake" class="form-control rounded-pill" style="width:400px">
-                    @{var AllCars = Model.Cars; }
-                    @{var MylistOfBrand = new List<string>();}
-                    @for (int i = 0; i < Model.User.UserCars.Count(); i++)
-                    {
-                        var allCarsWithSameBrand = Model.User.UserCars.Where(x => x.Car.Brand == Model.User.UserCars[i].Car.Brand).ToList();
-                        if (!MylistOfBrand.Contains(Model.User.UserCars[i].Car.Brand))
-                        {
-                            MylistOfBrand.Add(Model.User.UserCars[i].Car.Brand);
-                            <optgroup label="@Model.User.UserCars[i].Car.Brand">
-                                @for (int a = 0; a < allCarsWithSameBrand.Count(); a++)
-                                {
-                                    <option value="@allCarsWithSameBrand[a].Car.Make">@allCarsWithSameBrand[a].Car.Make</option>
-                                }
-                            </optgroup>
-                        }
-                    }
-                </select>
-            </div>
+
             <div class="form-group" style="width:400px">
-
-                <label class="control-label" style="color:white;">Nuvarande räckvidd i %</label>
-
-                <input asp-for="CurrentRangeM" class="form-control rounded-pill" />
+                <input asp-for="CurrentRangeM" class="form-control rounded-pill" placeholder="Nuvarande räckvidd i %" />
                 <span asp-validation-for="CurrentRangeM" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -175,7 +171,7 @@
         </form>
     </div>
 
-    <div class="grid-item col-sm-9 col-lg-9">
+    <div class="grid-item col-sm-7 col-lg-7">
         <h1 style="color:white; opacity: 1;">Välkommen till AmpRage</h1>
         <p style="color:white; opacity: 1;">AmpRage är den bästa sidan på marknaden för att på ett så effektivt sätt ta dig från punkt a till b med din fina elbil.</p>
     </div>
@@ -192,7 +188,6 @@
             var $optgroups = $('#AllCarMake > optgroup');
             $("#allCarMakes").hide();
             $("#myCarMakes").hide();
-            
 
             $("#CarBrandAllCars").on("change", function () {
                 var selectedVal = this.value;
@@ -216,7 +211,7 @@
         $(document).ready(function () {
             $("#dropdown-content-reg").hide();
             $("#radioLogin").attr('checked', true);
-            $("#radioAllCars").attr('checked', true);
+            $("#radioMyCars").attr('checked', true);
             $("#myCarBrands").hide();
 
             $("#radioRegister").on('click', function () {
@@ -234,6 +229,7 @@
 
             $("#radioMyCars").on('click', function () {
                 $("#allCarBrands").hide();
+                $("#allCarMakes").hide();
                 $("#myCarMakes").show();
                 $("#radioMyCars").prop('checked', true);
                 $("#radioAllCars").prop('checked', false);
@@ -246,11 +242,20 @@
             });
         });
         function SetCurrentUser() {
-            document.getElementById('currentUserDiv').innerHTML = "Inloggad som: @Model.User.Name"
-            if (document.getElementById('currentUserDiv').innerHTML == "Inloggad som: Gäst") {
+            document.getElementById('currentUserDiv').innerHTML = "@Model.User.Name"
+            if (document.getElementById('currentUserDiv').innerHTML == "Gästläge") {
                 $("#MyCarsRadios").hide()
+                $("#AllCarsRadios").hide()
+                $("#loginButton").show();
+                $("#logoutButton").hide();
             } else {
+                document.getElementById('currentUserDiv').innerHTML = "Inloggad som: @Model.User.Name"
                 $("#MyCarsRadios").show()
+                $("#AllCarsRadios").show();
+                $("#loginButton").hide();
+                $("#logoutButton").show();
+                $("#myCarBrands").show();
+                $("#allCarBrands").hide();
             }
         }
     </script>

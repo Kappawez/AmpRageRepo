@@ -101,8 +101,8 @@ namespace AmpRageRepo.Controllers
             };
             if (user.Name == null)
             {
-                path.User.Name = "Gäst";
-            }
+                path.User.Name = "Gästläge";
+            } 
             else
             {
                 path.User = _context.Users.Where(x => x.Name == user.Name && x.Phone == user.Phone && x.Password == user.Password).Include(x => x.UserCars).ThenInclude(x => x.Car).FirstOrDefault();
