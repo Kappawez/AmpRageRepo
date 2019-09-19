@@ -115,14 +115,14 @@ namespace AmpRageRepo.Controllers
         public async Task<IActionResult> CreatePath(Path path)
         {
             path.Car = LicensePlateSearcher.CheckForCarInDatabase(path.CarBrand, path.CarMake);
+
             if (path.Car == null)
             {
                 path.Car = LicensePlateSearcher.CheckForCarInDatabase("BMW", "iX3");
             }
-            else
-            {
-                path.RangeKm = path.Car.Range;
-            }
+
+            path.RangeKm = path.Car.Range;
+
             path.MaxRangeM = (path.RangeKm * 1000);    //km -> m
             path.MinRangeM = (path.RangeKm * 1000 * 0.2); //20% of MaxRangeM
             path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM; //diff
