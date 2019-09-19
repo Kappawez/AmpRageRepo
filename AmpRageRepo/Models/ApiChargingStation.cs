@@ -70,15 +70,15 @@ namespace AmpRageRepo.Models
         public string Postcode { get; set; }
         public int? CountryID { get; set; }
         public Country Country { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
         public string ContactTelephone1 { get; set; }
         public object ContactTelephone2 { get; set; }
         public object ContactEmail { get; set; }
         public object AccessComments { get; set; }
         public object RelatedURL { get; set; }
-        public double Distance { get; set; }
-        public int DistanceUnit { get; set; }
+        public double? Distance { get; set; }
+        public int? DistanceUnit { get; set; }
     }
 
     public class StatusType
@@ -109,7 +109,7 @@ namespace AmpRageRepo.Models
     {
         public bool? IsOperational { get; set; }
         public bool? IsUserSelectable { get; set; }
-        public int ID { get; set; }
+        public int? ID { get; set; }
         public string Title { get; set; }
     }
 
@@ -136,10 +136,10 @@ namespace AmpRageRepo.Models
         public object Reference { get; set; }
         public int? StatusTypeID { get; set; }
         public StatusType2 StatusType { get; set; }
-        public int LevelID { get; set; }
+        public int? LevelID { get; set; }
         public Level Level { get; set; }
-        public int Amps { get; set; }
-        public int Voltage { get; set; }
+        public int? Amps { get; set; }
+        public int? Voltage { get; set; }
         public double? PowerKW { get; set; }
         public int? CurrentTypeID { get; set; }
         public CurrentType CurrentType { get; set; }
@@ -162,15 +162,15 @@ namespace AmpRageRepo.Models
         public UsageType UsageType { get; set; }
         public object UsageCost { get; set; }
         public AddressInfo AddressInfo { get; set; }
-        public int NumberOfPoints { get; set; }
+        public int? NumberOfPoints { get; set; }
         public string GeneralComments { get; set; }
         public object DatePlanned { get; set; }
         public object DateLastConfirmed { get; set; }
         public int? StatusTypeID { get; set; }
         public StatusType StatusType { get; set; }
-        public DateTime DateLastStatusUpdate { get; set; }
-        public int DataQualityLevel { get; set; }
-        public DateTime DateCreated { get; set; }
+        public DateTime? DateLastStatusUpdate { get; set; }
+        public int? DataQualityLevel { get; set; }
+        public DateTime? DateCreated { get; set; }
         public int? SubmissionStatusTypeID { get; set; }
         public SubmissionStatus SubmissionStatus { get; set; }
         public object UserComments { get; set; }

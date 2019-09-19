@@ -114,39 +114,53 @@ namespace AmpRageRepo.Controllers
         //public async Task<IActionResult> CreatePath(Path path)
         public async Task<IActionResult> CreatePath(Path path)
         {
-            if (path.RangeKm == 0)
+            path.Car = LicensePlateSearcher.CheckForCarInDatabase(path.CarBrand, path.CarMake);
+
+            if (path.Car == null)
             {
-                path.Car = LicensePlateSearcher.CheckForCarInDatabase(path.CarBrand, path.CarMake);
-                if (path.Car == null)
+                path.Car = LicensePlateSearcher.CheckForCarInDatabase("BMW", "iX3");
+            }
+
+            path.RangeKm = path.Car.Range;
+
+            path.MaxRangeM = (path.RangeKm * 1000);    //km -> m
+            path.MinRangeM = (path.RangeKm * 1000 * 0.2); //20% of MaxRangeM
+            path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM; //diff
+            path.CurrentRangeM = path.MaxRangeM * (path.CurrentRangeM / 100);  //50 * 1000;
+
+            if (path.Destination == null || path.Destination == string.Empty)
+            {
+                try
                 {
-                    path.Car = new Car { Capacity = 70 };
-                    path.RangeKm = 350;
+                    path.IgnoreRange = true;
+                    await GetChargingStationLocationAsDestination(path);
                 }
-                else
+                catch (Exception e)
                 {
-                    path.RangeKm = path.Car.Range;
+                    throw new Exception(e.Message);
                 }
-                path.MaxRangeM = (path.RangeKm * 1000);    //km -> m
-                path.MinRangeM = (path.RangeKm * 1000 * 0.2); //20% of MaxRangeM
-                path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM; //diff
-                path.CurrentRangeM = path.MaxRangeM * (path.CurrentRangeM / 100);  //50 * 1000;
             }
 
             var direction = await Google_GetDirection(path);
 
             try
             {
-                int x = 0;
+                int loop = 0;
 
-                while (await EvaluateDirection(direction, path) == false)
+                while (await EvaluateDirection(direction, path) == true)
                 {
                     //A path could have more than 20 waypoints
                     //Temp solution to prevent infinite loops
-                    if (x >= 9)
+                    if (loop >= 14)
                         throw new Exception("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOP");
 
-                    x++;
+                    loop++;
                     direction = await Google_GetDirection(path);
+                }
+
+                if(path.Arrived == false)
+                {
+                    throw new Exception("Couldn't make a path");
                 }
             }
             catch (Exception e)
@@ -215,10 +229,11 @@ namespace AmpRageRepo.Controllers
             }
             catch (Exception e)
             {
-                    throw new Exception(e.Message);
+                throw new Exception(e.Message);
             }
 
-            return true;
+            path.Arrived = true;
+            return false;
         }
         private async Task<bool> FindChargingStationOnStep(List<Step> steps, Path path)
         {
@@ -226,9 +241,8 @@ namespace AmpRageRepo.Controllers
             {
                 //TODO get a list of coordEntity
                 var waypoint = await GetChargingStationLocationAsStep(steps, path);
-                await SetupWaypoint(path, waypoint);
 
-                return false;
+                return await SetupWaypoint(path, waypoint);
             }
             catch (Exception e)
             {
@@ -242,6 +256,10 @@ namespace AmpRageRepo.Controllers
                 //TODO get a list of chargintStation for each coordEntity
                 //TODO choose chargintStation based on other things than shortest route (timeToCharge etc)
                 var chargingStation = await OpenChargeMap_GetChargingStationInfo(waypoint);
+
+                if (chargingStation == null)
+                    return false;
+
                 waypoint.ChargingStation = chargingStation;
 
                 //TODO add timeToCharge to traveltime
@@ -308,13 +326,6 @@ namespace AmpRageRepo.Controllers
                     currentSearch++;
                     var search = await Google_SearchForChargingStations(maxCoord);
 
-                    //return new CoordinateEntity
-                    //{
-                    //    Address = result.formatted_address,
-                    //    Latitude = double.Parse(motherf[0]),
-                    //    Longitude = double.Parse(motherf[1])
-                    //};
-
                     if (search.results != null && search.results.Count > 0)
                     {
                         //Choose the first result
@@ -379,7 +390,7 @@ namespace AmpRageRepo.Controllers
         }
 
         #region Calc
-        private async Task<decimal?> GetEmissionsOfCharging(ChargingStationRootObject charging, Path path)
+        private async Task<double?> GetEmissionsOfCharging(ChargingStationRootObject charging, Path path)
         {
             //https://www.rensmart.com/Calculators/KWH-to-CO2
             var country = charging.AddressInfo.Country.Title; //Sweden
@@ -393,8 +404,9 @@ namespace AmpRageRepo.Controllers
             var batteryDiff = maxBattery - currentBattery; //kWh
             var co2 = countryEmissions.KgCo2Kwh; //g/co2
             var emissions = batteryDiff * co2; //g co2 to charge
+            var round = Math.Round(emissions, 6);
 
-            return Convert.ToDecimal(Math.Round(emissions, 4));
+            return round;
         }
         private int? ChargingCalculator(ChargingStationRootObject chargingStation, Path path)
         {
@@ -496,17 +508,29 @@ namespace AmpRageRepo.Controllers
             return rootObjects[0];
         }
 
-        private async Task<TextSearchRootObject> Google_SearchForChargingStations(string coord)
+        private async Task<TextSearchRootObject> Google_SearchForChargingStations(string location)
         {
             TextSearchRootObject rootObject = null;
 
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("Https://maps.googleapis.com/maps/api/place/textsearch/");
+                string request = $"json?query=charging+station+{location}&key={apiKey}";
+                //$"json?query=charging+station&location={location}&radius=10000&key={apiKey}"
 
-                var responseTask = client.GetAsync(
-                    $"json?query=charging+station&location={coord}&radius=10000&key={apiKey}"
-                    );
+                var locationArray = location.Split(",");
+
+                if(locationArray.Length > 1)
+                {
+                    var lLeft = locationArray[0].Trim();
+
+                    if(double.TryParse(lLeft, out double x) == true)
+                    {
+                        request = $"json?query=charging+station&location={location}&radius=50000&key={apiKey}";
+                    }
+                }
+
+                var responseTask = client.GetAsync(request);
 
                 responseTask.Wait();
                 //To store result of web api response.   
