@@ -28,7 +28,8 @@ namespace AmpRageRepo.Controllers
             {
                 Car = new Car { Capacity = 75 },
                 RangeKm = 350,
-                Origin = "Sundsvall",
+                Origin = "60.675216,17.140548",
+                Destination = "62.389899,17.306923",
                 CurrentRangeM = 10
             };
 
