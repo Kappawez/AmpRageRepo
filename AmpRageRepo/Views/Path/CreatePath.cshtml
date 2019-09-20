@@ -6,10 +6,10 @@
 <a class="logoamprage" style="text-align: center" asp-area="" asp-controller="Path" asp-action="CreatePath"><h1 class="display-3 pulse"><img src="~/fav1.png" width="60" height="60" /><b>A</b>mp<b>R</b>age</h1></a>
 
 
-<div id="currentUserDiv" class="float-right text-white">Inloggad som: DennaSkaAldrigSynas</div><br />
-<div class="dropdown dropleft float-right">
-    <button id="loginButton" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Logga in <span class="glyphicon glyphicon-log-in"></span></button>
-    <div class="dropdown-menu" style="width: 250px;">
+<div id="currentUserDiv" class="float-right text-white" style="margin-right: 20px;">Inloggad som: DennaSkaAldrigSynas</div><br />
+<div class="dropdown dropleft float-right" style="margin-right: 10px">
+    <button id="loginButton" class="btn btn-primary dropdown-toggle" data-toggle="collapse" data-target="#login" href="#">Logga in <span class="glyphicon glyphicon-log-in"></span></button>
+    <div id ="login" class="dropdown-menu" style="width: 250px; padding:10px;">
 
         <input type="radio" id="radioLogin" class="" style="margin: 5px">Logga in<br />
         <input type="radio" id="radioRegister" class="" style="margin: 5px">Registrera dig<br />
@@ -67,78 +67,37 @@
         </div>
 
 
-        <div class="container-fluid">
+        <div class="container">
             <br>
             <a class="small" href="#">Glömt lösenord?</a>
         </div>
     </div>
 </div>
-<a asp-area="" asp-controller="Path" asp-action="CreatePath"><button id="logoutButton" class="btn btn-danger float-right">Logga ut <span class="glyphicon glyphicon-log-in"></span></button></a>
 
+<a asp-area="" asp-controller="Path" asp-action="CreatePath"><button id="logoutButton" class="btn btn-danger float-right">Logga ut</button></a>
 
-<div class="container2">
+<div class="dropdown dropleft float-right" style="margin-right: 10px">
+    <button id="addCarButton" class="btn btn-success dropdown-toggle" data-toggle="collapse" data-target="#collapsingAddCarDiv">Lägg till bil</button>
 
-    <div class=" col-sm-6 col-lg-6">
+    <div id="collapsingAddCarDiv" class="dropdown-menu" style="width: 340px; padding: 10px;">
 
-        <form asp-action="CreatePath">
-            <div asp-validation-summary="ModelOnly" class="text-danger" id="first"></div>
-
-            <div class="form-group" style="width:400px; color:white;">
-
-                <input asp-for="Origin" class="form-control rounded-pill" placeholder="Startposition" />
-                <span asp-validation-for="Origin" class="text-danger"></span>
-            </div>
-
-            <div class="form-group" style="width:400px; color:white;">
-
-                <input asp-for="Destination" class="form-control rounded-pill" placeholder="Slutdestination" />
-                <span asp-validation-for="Destination" class="text-danger"></span>
-            </div>
-
-            <div class="form-group container" id="brand" style="width:400px; color:white;">
-                <div id="MyCarsRadios">
-                    <input type="radio" id="radioMyCars" class="" style="margin: 5px">Mina bilar<br />
-                </div>
-                <div id="AllCarsRadios">
-                    <input type="radio" id="radioAllCars" class="" style="margin: 5px">Alla bilar
-                </div>
-            </div>
-
-            <div class="form-group" id="make" style="width:400px">
-
-                <div id="allCarBrands">
-                    <select asp-for="CarBrand" id="CarBrandAllCars" class="form-control rounded-pill" style="width:400px">
-                        <option value="" selected disabled>Välj din jävla bil</option>
+        <div id="dropdown-content-reg">
+            <form asp-controller="Users" asp-action="AddCarToUser">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @{var userId = Model.User.Id;}
+                <input type="hidden" asp-for="@userId" />
+                <div class="form-group" id="brandAdd" style="width:300px">
+                    <p class="control-label">Car brand:</p>
+                    <select asp-for="CarBrand" id="CarBrandAdd" class="form-control rounded-pill" style="width:300px">
                         @foreach (var item in Model.AllCarBrands)
                         {
                             <option value="@item.Value">@item.Text</option>
                         }
                     </select>
                 </div>
-                <div id="myCarMakes">
-                    <p style="color: white">Mina bilar:</p>
-                    <select asp-for="CarMake" id="MyCarMake" class="form-control rounded-pill" style="width:400px">
-                        @{var AllCars = Model.Cars; }
-                        @{var MylistOfBrand = new List<string>();}
-                        @for (int i = 0; i < Model.User.UserCars.Count(); i++)
-                        {
-                            var allCarsWithSameBrand = Model.User.UserCars.Where(x => x.Car.Brand == Model.User.UserCars[i].Car.Brand).ToList();
-                            if (!MylistOfBrand.Contains(Model.User.UserCars[i].Car.Brand))
-                            {
-                                MylistOfBrand.Add(Model.User.UserCars[i].Car.Brand);
-                                <optgroup label="@Model.User.UserCars[i].Car.Brand">
-                                    @for (int a = 0; a < allCarsWithSameBrand.Count(); a++)
-                                    {
-                                        <option value="@allCarsWithSameBrand[a].Car.Make">@allCarsWithSameBrand[a].Car.Make</option>
-                                    }
-                                </optgroup>
-                            }
-                        }
-                    </select>
-                </div>
 
-                <div id="allCarMakes" style="margin-top: 15px;">
-                    <select asp-for="CarMake" id="AllCarMake" class="form-control rounded-pill" style="width:400px">
+                <div class="form-group" id="makeAdd" >
+                    <select asp-for="CarMake" id="CarMakeAdd" class="form-control rounded-pill" style="width:300px">
                         @{var arrayOfCars = Model.AllCars.ToArray(); }
                         @{var listOfBrand = new List<string>();}
                         @for (int i = 0; i < arrayOfCars.Count(); i++)
@@ -157,23 +116,114 @@
                         }
                     </select>
                 </div>
-            </div>
-
-            <div class="form-group" style="width:400px">
-                <input asp-for="CurrentRangeM" class="form-control rounded-pill" placeholder="Nuvarande räckvidd i %" />
-                <span asp-validation-for="CurrentRangeM" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <p class="control-label">
-                    <input type="submit" value="Search" class="btn btn-primary" />
-                </p>
-            </div>
-        </form>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-success" />
+                </div>
+            </form>
+        </div>
     </div>
+</div>
 
-    <div class="grid-item col-sm-7 col-lg-7">
-        <h1 style="color:white; opacity: 1;">Välkommen till AmpRage</h1>
-        <p style="color:white; opacity: 1;">AmpRage är den bästa sidan på marknaden för att på ett så effektivt sätt ta dig från punkt a till b med din fina elbil.</p>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col" style="margin-top: 50px;">
+            <b>Sök din resa:</b>
+            <form asp-action="CreatePath">
+                <div asp-validation-summary="ModelOnly" class="text-danger" id="first"></div>
+                <div class="form-group" style="width:400px; color:white;">
+                    <input asp-for="Origin" class="form-control rounded-pill" placeholder="Startposition" />
+                    <span asp-validation-for="Origin" class="text-danger"></span>
+                </div>
+
+                <div class="form-group" style="width:400px; color:white;">
+
+                    <input asp-for="Destination" class="form-control rounded-pill" placeholder="Slutdestination" />
+                    <span asp-validation-for="Destination" class="text-danger"></span>
+                </div>
+
+                <div class="form-group container" id="brand">
+                    <div class="row">
+                        <div id="MyCarsRadios" class="col">
+                            <input type="radio" id="radioMyCars" class="" style="margin: 5px">Mina bilar<br />
+                        </div>
+                        <div id="AllCarsRadios" class="col">
+                            <input type="radio" id="radioAllCars" class="" style="margin: 5px">Alla bilar
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" id="make" style="width:400px">
+
+                    <div id="allCarBrands">
+                        <select asp-for="CarBrand" id="CarBrandAllCars" class="form-control rounded-pill" style="width:400px">
+                            <option value="" selected disabled>Välj en bil</option>
+                            @foreach (var item in Model.AllCarBrands)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div id="myCarMakes">
+                        <select asp-for="CarMake" id="MyCarMake" class="form-control rounded-pill" style="width:400px">
+                            @{var AllCars = Model.Cars; }
+                            @{var MylistOfBrand = new List<string>();}
+                            @for (int i = 0; i < Model.User.UserCars.Count(); i++)
+                            {
+                                var allCarsWithSameBrand = Model.User.UserCars.Where(x => x.Car.Brand == Model.User.UserCars[i].Car.Brand).ToList();
+                                if (!MylistOfBrand.Contains(Model.User.UserCars[i].Car.Brand))
+                                {
+                                    MylistOfBrand.Add(Model.User.UserCars[i].Car.Brand);
+                                    <optgroup label="@Model.User.UserCars[i].Car.Brand">
+                                        @for (int a = 0; a < allCarsWithSameBrand.Count(); a++)
+                                        {
+                                            <option value="@allCarsWithSameBrand[a].Car.Make">@allCarsWithSameBrand[a].Car.Make</option>
+                                        }
+                                    </optgroup>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div id="allCarMakes" style="margin-top: 15px;">
+                        <select asp-for="CarMake" id="AllCarMake" class="form-control rounded-pill" style="width:400px">
+                            @{var arrayOfCars = Model.AllCars.ToArray(); }
+                            @{var listOfBrand = new List<string>();}
+                            @for (int i = 0; i < arrayOfCars.Count(); i++)
+                            {
+                                var allCarsWithSameBrand = Model.AllCars.Where(x => x.Text == arrayOfCars[i].Text).ToList();
+                                if (!listOfBrand.Contains(arrayOfCars[i].Text))
+                                {
+                                    listOfBrand.Add(arrayOfCars[i].Text);
+                                    <optgroup label="@arrayOfCars[i].Text">
+                                        @for (int a = 0; a < allCarsWithSameBrand.Count(); a++)
+                                        {
+                                            <option value="@allCarsWithSameBrand[a].Value">@allCarsWithSameBrand[a].Value</option>
+                                        }
+                                    </optgroup>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="width:400px">
+                    <input asp-for="CurrentRangeM" class="form-control rounded-pill" placeholder="Nuvarande räckvidd i %" />
+                    <span asp-validation-for="CurrentRangeM" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <p class="control-label">
+                        <input type="submit" value="Sök" class="btn btn-primary" />
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        <div class="col" style="margin-top: 50px;">
+            <h1 style="color:white; opacity: 1;">Välkommen till AmpRage</h1>
+            <p style="color:white; opacity: 1;">AmpRage är den bästa sidan på marknaden för att på ett så effektivt sätt ta dig från punkt a till b med din fina elbil.</p>
+        </div>
     </div>
 </div>
 
@@ -187,7 +237,6 @@
         $(document).ready(function () {
             var $optgroups = $('#AllCarMake > optgroup');
             $("#allCarMakes").hide();
-            $("#myCarMakes").hide();
 
             $("#CarBrandAllCars").on("change", function () {
                 var selectedVal = this.value;
@@ -195,16 +244,24 @@
                 $('#AllCarMake').html($optgroups.filter('[label="' + selectedVal + '"]'));
             });
         });
+
+         $("#addCarButton").on('click', function () {
+            var $optgroups = $('#CarMakeAdd > optgroup');
+            $("#makeAdd").hide();
+
+            $("#CarBrandAdd").on("change", function () {
+                var selectedVal = this.value;
+                $("#makeAdd").show();
+                $('#CarMakeAdd').html($optgroups.filter('[label="' + selectedVal + '"]'));
+            });
+        });
     </script>
 
     <script>
-
         google.maps.event.addDomListener(window, 'load', function () {
             new google.maps.places.SearchBox(document.getElementById('Origin'));
             new google.maps.places.SearchBox(document.getElementById('Destination'));
         });
-
-
     </script>
 
     <script>
@@ -212,7 +269,6 @@
             $("#dropdown-content-reg").hide();
             $("#radioLogin").attr('checked', true);
             $("#radioMyCars").attr('checked', true);
-            $("#myCarBrands").hide();
 
             $("#radioRegister").on('click', function () {
                 $("#dropdown-content-reg").show();
@@ -244,18 +300,21 @@
         function SetCurrentUser() {
             document.getElementById('currentUserDiv').innerHTML = "@Model.User.Name"
             if (document.getElementById('currentUserDiv').innerHTML == "Gästläge") {
-                $("#MyCarsRadios").hide()
-                $("#AllCarsRadios").hide()
+                $("#brand").hide()
                 $("#loginButton").show();
                 $("#logoutButton").hide();
+                $("#myCarMakes").hide();
+                $("#addCarButton").hide();
             } else {
                 document.getElementById('currentUserDiv').innerHTML = "Inloggad som: @Model.User.Name"
+                $("#brand").show()
                 $("#MyCarsRadios").show()
                 $("#AllCarsRadios").show();
+                $("#myCarMakes").show();
                 $("#loginButton").hide();
                 $("#logoutButton").show();
-                $("#myCarBrands").show();
                 $("#allCarBrands").hide();
+                $("#addCarButton").show();
             }
         }
     </script>
