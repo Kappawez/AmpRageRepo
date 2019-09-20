@@ -158,7 +158,7 @@
 
                     <div id="allCarBrands">
                         <select asp-for="CarBrand" id="CarBrandAllCars" class="form-control rounded-pill" style="width:400px">
-                            <option value="" selected disabled>Välj din jävla bil</option>
+                            <option value="" selected disabled>Välj en bil</option>
                             @foreach (var item in Model.AllCarBrands)
                             {
                                 <option value="@item.Value">@item.Text</option>
