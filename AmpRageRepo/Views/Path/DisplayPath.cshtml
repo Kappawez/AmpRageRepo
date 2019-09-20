@@ -139,13 +139,21 @@
 
             @foreach (var item in Model.ChargeTimes)
             {
-                @:chargeTimes.push("@item");
+                if (item == null)
+                {
+                @:chargeTimes.push("0");
+
+                }
+                string minuter = (item / 60).ToString();
+                @:chargeTimes.push("+@minuter min");
             };
             @foreach (var item in Model.Emissions)
             {
-                @:emissions.push("@item");
+                    string gram = (item.ToString() + "g per laddning").ToString();
+                    @:emissions.push("@gram");
             };
-
+            emissions.push(" ");
+            chargeTimes.push(" ");
 
             for (var i = 0; i < items.length; ++i) {
                 var string = items[i].textContent;
@@ -174,20 +182,41 @@
                     summaryPanel.innerHTML = "";
                     //summaryPanel.innerHTML += "<b>Tid" + "<b>längd" + "</b><br/>";
                     // For each route, display summary information.
+                    summaryPanel.innerHTML = "Start ► Mål<br>";
+                    summaryPanell.innerHTML += "<br>";
+                    summaryPanelll.innerHTML += "<br>";
+                    summaryPanellll.innerHTML += "<br/><br/>";
+                    summaryPanelllll.innerHTML += "<br/><br/>";
                     for (var i = 0; i < route.legs.length; i++) {
                         var routeSegment = i + 1;
                         //summaryPanel.innerHTML += "<b>Ruttdel: " + routeSegment + "</b><br />";
-                        summaryPanel.innerHTML += "▼" + route.legs[i].start_address +    "<br />"; /*+ route.legs[i].duration.text + "\t" + route.legs[i].distance.text + "<br/>"*/
-                        summaryPanell.innerHTML += route.legs[i].duration.text + "<br/>";
-                        summaryPanelll.innerHTML += route.legs[i].distance.text + "<br/>";
-                        summaryPanellll.innerHTML += chargeTimes[i] + "<br/>";
-                        summaryPanelllll.innerHTML += emissions[i] + "<br/>";
+                        summaryPanel.innerHTML += "▼" + route.legs[i].start_address +    "<br /><br />"; /*+ route.legs[i].duration.text + "\t" + route.legs[i].distance.text + "<br/>"*/
+                        summaryPanell.innerHTML += route.legs[i].duration.text + "<br/><br/>";
+                        summaryPanelll.innerHTML += route.legs[i].distance.text + "<br/><br/>";
+                        summaryPanellll.innerHTML += chargeTimes[i]== null ? "+100 min" + "<br/><br/>" : chargeTimes[i] + "<br/><br/>";
+                        summaryPanelllll.innerHTML += emissions[i] == null ? "0.850625g per laddning" + "<br/><br/>" : emissions[i] + "<br/><br/>";
 
                         if (i == route.legs.length - 1) {
 
-                            summaryPanel.innerHTML += "►" + route.legs[i].end_address + "<br />";
+                            summaryPanel.innerHTML += "►" + route.legs[i].end_address + "<br /><br />Totalt:";
+
                         }
                     }
+                    var totalCharging = 0;
+                    var totaltEmission = 0;
+
+                    @foreach (var item in Model.ChargeTimes)
+                    {
+                        @:totalCharging += @item;
+                    }
+                    @foreach (var item in Model.Emissions)
+                    {
+                        @:totaltEmission += @item;
+                    }
+
+                    document.getElementById("chargetime").innerHTML += "+" + (totalCharging / 60).toFixed(0) + " min";
+                    document.getElementById("emissions").innerHTML += "" + totaltEmission + " g<br>";
+
                     computeTotalDistance(response);
                 } else {
                     alert("directions response " + status);
@@ -215,8 +244,8 @@
 
 
             //document.getElementById("directions_panel").innerHTML += "Totala sträckan är: " + totalDist.toFixed(0) + " km<br>Totala tiden: " + totalHour + " tim " + totalMin + " min " + "</br>";
-            document.getElementById("time").innerHTML += "</br>" +  totalHour + " tim " + totalMin + " min " + "</br>";
-            document.getElementById("range").innerHTML += "</br>" + totalDist.toFixed(0) + " km<br>";
+            document.getElementById("time").innerHTML += "<br />" +  totalHour + " tim " + totalMin + " min " + "</br>";
+            document.getElementById("range").innerHTML += "<br />" + totalDist.toFixed(0) + " km<br>";
 
         }
 
