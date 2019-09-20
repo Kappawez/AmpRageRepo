@@ -16,6 +16,8 @@ namespace AmpRageRepo.Models
             Waypoints = new List<Waypoint>();
             //ChargingStations = new List<ChargingStationRootObject>();
             WayPointStrings = new List<string>();
+            ChargeTimes = new List<int?>();
+            Emissions = new List<double?>();
         }
 
         [Required(ErrorMessage = "Start är obligatorisk.")]
@@ -24,6 +26,7 @@ namespace AmpRageRepo.Models
         public string CarBrand { get; set; }
         public string CarMake { get; set; }
         public Car Car { get; set; }
+
         public bool IgnoreRange { get; set; }
         public bool Arrived { get; set; }
 
@@ -49,5 +52,7 @@ namespace AmpRageRepo.Models
 
         //stupid razor pages cannot loop  through WayPoints.CoordString??
         public List<string> WayPointStrings { get; set; }
+        public List<int?> ChargeTimes { get; set; }
+        public List<double?> Emissions { get; set; }
     }
 }
