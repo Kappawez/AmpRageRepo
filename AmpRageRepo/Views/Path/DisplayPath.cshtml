@@ -84,7 +84,6 @@
 
 
 
-
 @section scripts{
 
     <!--ENSURE YOU CHANGE TO YOUR OWN API KEY HERE !!! -->
@@ -150,6 +149,7 @@
                     var summaryPanel = document.getElementById("directions_panel");
                     var summaryPanell = document.getElementById("time");
                     var summaryPanelll = document.getElementById("range");
+                 
                     summaryPanel.innerHTML = "";
                     //summaryPanel.innerHTML += "<b>Tid" + "<b>längd" + "</b><br/>";
                     // For each route, display summary information.
@@ -163,7 +163,7 @@
 
                             summaryPanel.innerHTML += "►" + route.legs[i].end_address + "<br />";
                         }
-
+                      
 
                     }
                     computeTotalDistance(response);
