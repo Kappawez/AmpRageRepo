@@ -24,6 +24,7 @@ namespace AmpRageRepo.Controllers
 
         public async Task<IActionResult> Snabb()
         {
+            //Method with hardcoded vaues for testing
             var path = new Path
             {
                 Car = new Car { Capacity = 75 },
@@ -116,10 +117,10 @@ namespace AmpRageRepo.Controllers
         {
             path.Car = LicensePlateSearcher.CheckForCarInDatabase(path.CarBrand, path.CarMake);
 
+            //If car couldnt be found set it to a default one
             if (path.Car == null)
-            {
                 path.Car = LicensePlateSearcher.CheckForCarInDatabase("BMW", "iX3");
-            }
+
 
             path.RangeKm = path.Car.Range;
 
@@ -128,6 +129,7 @@ namespace AmpRageRepo.Controllers
             path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM; //diff
             path.CurrentRangeM = path.MaxRangeM * (path.CurrentRangeM / 100);  //50 * 1000;
 
+            //If no entered destination set it to the closest charging station
             if (path.Destination == null || path.Destination == string.Empty)
             {
                 try
@@ -210,8 +212,13 @@ namespace AmpRageRepo.Controllers
                     path.Arrived = true;
                     return false;
                 }
+                if(path.Waypoints.Count > 0 && DistanceCheck(direction, path) == false)
+                {
+                    path.Arrived = false;
+                    return false;
+                }
 
-                List<Step> stepList = new List<Step>();
+                var stepList = new List<Step>();
 
                 var currentRoute = direction.routes[direction.routes.Count - 1];
                 var currentLeg = currentRoute.legs[currentRoute.legs.Count - 1];
@@ -237,6 +244,34 @@ namespace AmpRageRepo.Controllers
 
             path.Arrived = true;
             return false;
+        }
+        private bool DistanceCheck(DirectionRootObject direction, Path path)
+        {
+            //If google apis can't find a charging station it defaults back to your geolocation
+            //If the ditance between the start and the last waypoint is greater than the distance between
+            //the start and the end stop looping.
+            var currentRoute = direction.routes[direction.routes.Count - 1];
+            var firstLeg = currentRoute.legs[0];
+            var lastLeg = currentRoute.legs[currentRoute.legs.Count - 1];
+            var currentWaypoint = path.Waypoints[path.Waypoints.Count - 1];
+
+            var startLat = firstLeg.start_location.lat;
+            var startLng = firstLeg.start_location.lng;
+
+            var wayPointLat = currentWaypoint.Latitude;
+            var wayPointLng = currentWaypoint.Longitude;
+
+            var endLat = lastLeg.end_location.lat;
+            var endLng = lastLeg.end_location.lng;
+
+            var startToEnd = DistanceBetweenCoords(startLat, startLng, endLat, endLng, 'M');
+            var startToWaypoint = DistanceBetweenCoords(startLat, startLng, wayPointLat, wayPointLng, 'M');
+
+            //Multiplier just to be sure
+            if (startToWaypoint > (startToEnd * 5))
+                return false;
+
+            return true;
         }
         private async Task<bool> FindChargingStationOnStep(List<Step> steps, Path path)
         {
@@ -265,18 +300,20 @@ namespace AmpRageRepo.Controllers
 
                 waypoint.ChargingStation = chargingStation;
 
-                //TODO add timeToCharge to traveltime
                 waypoint.TimeToCharge = ChargingCalculator(chargingStation, path); //S
                 waypoint.Emissions = await GetEmissionsOfCharging(chargingStation, path); //g/co2
                 waypoint.CoordString = waypoint.Latitude + "," + waypoint.Longitude;
 
                 //stupid razor pages cannot loop  through WayPoints.CoordString??
                 path.WayPointStrings.Add(waypoint.CoordString);
+                //path.ChargeTimes.Add(waypoint.TimeToCharge != null ? (int)waypoint.TimeToCharge : 0);
+                //path.Emissions.Add(waypoint.Emissions != null ? (double)waypoint.Emissions : 0);
+                path.ChargeTimes.Add(waypoint.TimeToCharge);
+                path.Emissions.Add(waypoint.Emissions);
 
                 path.Waypoints.Add(waypoint);
-                //path.ChargingStations.Add(chargingStation);
 
-                //TODO logic for charging car
+                //TODO more logic for charging car
                 path.CurrentRangeM = path.EffectiveRangeM;
 
                 return true;
