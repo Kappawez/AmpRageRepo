@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20191007175458_init.cs" />
+    <Compile Remove="Migrations\20191007175458_init.Designer.cs" />
     <Compile Remove="Views\Shared\Layout2.cshtml.cs" />
   </ItemGroup>
 

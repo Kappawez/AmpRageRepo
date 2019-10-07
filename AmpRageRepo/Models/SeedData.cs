@@ -13,24 +13,24 @@ namespace AmpRageRepo.Models
 
         public static void Initialize(IServiceProvider serviceProvider)
         {
-            using (var context = new AmpContext(
-                serviceProvider.GetRequiredService<
-                    DbContextOptions<AmpContext>>()))
-            {
-                // Look for any movies.
-                if (context.Cars.Any())
-                {
-                    return;   // DB has been seeded
-                }
+            //using (var context = new AmpContext(
+            //    serviceProvider.GetRequiredService<
+            //        DbContextOptions<AmpContext>>()))
+            //{
+            //    // Look for any movies.
+            //    if (context.Cars.Any())
+            //    {
+            //        return;   // DB has been seeded
+            //    }
 
-                var listOfCars = GetTheCars();
+            //    var listOfCars = GetTheCars();
 
-                context.Cars.AddRange(listOfCars);
-                context.Database.CanConnect();
-                context.Database.GetDbConnection();
+            //    context.Cars.AddRange(listOfCars);
+            //    context.Database.CanConnect();
+            //    context.Database.GetDbConnection();
 
-                context.SaveChanges();
-            }
+            //    context.SaveChanges();
+            //}
         }
 
         private static List<Car> GetTheCars()
@@ -47,7 +47,8 @@ namespace AmpRageRepo.Models
                 {
                     listOfProps.Add(item.ToString());
                     counter++;
-                } else
+                }
+                else
                 {
                     car = CreateCar(listOfProps);
                     listOfCars.Add(car);

@@ -66,17 +66,17 @@ namespace AmpRageRepo.Controllers
 
             var userCarViewModel = new UserCarViewModel()
             {
-                UserId = user.Id,
-                AllCarBrands = LicensePlateSearcher.GetAllBrands().Select(x => new SelectListItem
-                {
-                    Text = x,
-                    Value = x.ToString()
-                }),
-                AllCarModels = LicensePlateSearcher.GetAllModels().Select(x => new SelectListItem
-                {
-                    Text = x,
-                    Value = x.ToString()
-                })
+                //UserId = user.Id,
+                //AllCarBrands = LicensePlateSearcher.GetAllBrands().Select(x => new SelectListItem
+                //{
+                //    Text = x,
+                //    Value = x.ToString()
+                //}),
+                //AllCarModels = LicensePlateSearcher.GetAllModels().Select(x => new SelectListItem
+                //{
+                //    Text = x,
+                //    Value = x.ToString()
+                //})
             };
 
             return View(userCarViewModel);
@@ -118,7 +118,6 @@ namespace AmpRageRepo.Controllers
             {
                 throw new Exception(e.Message);
             }
-            return RedirectToAction("CreatePath", "Path");
         }
         // GET: Users/Create
         public IActionResult Create()

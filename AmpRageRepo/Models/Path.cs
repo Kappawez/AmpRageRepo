@@ -18,7 +18,9 @@ namespace AmpRageRepo.Models
             WayPointStrings = new List<string>();
             ChargeTimes = new List<int?>();
             Emissions = new List<double?>();
+            ApiKey = "AIzaSyAtLGNx4xdo4MLPjBrc80bySqSTkRSLtaE";
         }
+        public string ApiKey { get; set; }
 
         [Required(ErrorMessage = "Start är obligatorisk.")]
         public string Origin { get; set; }

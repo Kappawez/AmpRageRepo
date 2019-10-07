@@ -74,7 +74,8 @@
     </div>
 </div>
 
-<a asp-area="" asp-controller="Path" asp-action="CreatePath"><button id="logoutButton" class="btn btn-danger float-right">Logga ut</button></a>
+<a asp-area="" asp-controller="Path" asp-action="CreatePath"></a>
+<button id="logoutButton" class="btn btn-danger float-right"></button>
 
 <div class="dropdown dropleft float-right" style="margin-right: 10px">
     <button id="addCarButton" class="btn btn-success dropdown-toggle" data-toggle="collapse" data-target="#collapsingAddCarDiv">Lägg till bil</button>
@@ -188,15 +189,15 @@
 
                     <div id="allCarMakes" style="margin-top: 15px;">
                         <select asp-for="CarMake" id="AllCarMake" class="form-control rounded-pill" style="width:400px">
-                            @{var arrayOfCars = Model.AllCars.ToArray(); }
-                            @{var listOfBrand = new List<string>();}
-                            @for (int i = 0; i < arrayOfCars.Count(); i++)
+                            @{var arrayOfCars2 = Model.AllCars.ToArray(); }
+                            @{var listOfBrand2 = new List<string>();}
+                            @for (int i = 0; i < arrayOfCars2.Count(); i++)
                             {
-                                var allCarsWithSameBrand = Model.AllCars.Where(x => x.Text == arrayOfCars[i].Text).ToList();
-                                if (!listOfBrand.Contains(arrayOfCars[i].Text))
+                                var allCarsWithSameBrand = Model.AllCars.Where(x => x.Text == arrayOfCars2[i].Text).ToList();
+                                if (!listOfBrand2.Contains(arrayOfCars2[i].Text))
                                 {
-                                    listOfBrand.Add(arrayOfCars[i].Text);
-                                    <optgroup label="@arrayOfCars[i].Text">
+                                    listOfBrand2.Add(arrayOfCars2[i].Text);
+                                    <optgroup label="@arrayOfCars2[i].Text">
                                         @for (int a = 0; a < allCarsWithSameBrand.Count(); a++)
                                         {
                                             <option value="@allCarsWithSameBrand[a].Value">@allCarsWithSameBrand[a].Value</option>

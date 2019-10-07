@@ -80,25 +80,30 @@ namespace AmpRageRepo.Controllers
 
         public IActionResult CreatePath(UserViewModel user)
         {
+            if (_context.Cars.Count() == 0)
+            {
+                return RedirectToAction("Setup", "Setup");
+            }
+
             var path = new Path()
             {
                 User = new User() { Name = "" },
-                AllCarBrands = LicensePlateSearcher.GetAllBrands().Select(x => new SelectListItem
-                {
-                    Text = x,
-                    Value = x.ToString()
-                }),
-                AllCarModels = LicensePlateSearcher.GetAllModels().Select(x => new SelectListItem
-                {
-                    Text = x,
-                    Value = x.ToString()
-                }),
-                AllCars = LicensePlateSearcher.GetAllCars().Select(x => new SelectListItem
-                {
-                    Text = x.Brand,
-                    Value = x.Make.ToString().Replace(';', ' ') + $" - ({x.Range}km)"
-                }),
-                Cars = _context.Cars.ToList()
+                //AllCarBrands = LicensePlateSearcher.GetAllBrands().Select(x => new SelectListItem
+                //{
+                //    Text = x,
+                //    Value = x.ToString()
+                //}),
+                //AllCarModels = LicensePlateSearcher.GetAllModels().Select(x => new SelectListItem
+                //{
+                //    Text = x,
+                //    Value = x.ToString()
+                //}),
+                //AllCars = LicensePlateSearcher.GetAllCars().Select(x => new SelectListItem
+                //{
+                //    Text = x.Brand,
+                //    Value = x.Make.ToString().Replace(';', ' ') + $" - ({x.Range}km)"
+                //}),
+                //Cars = _context.Cars.ToList()
             };
             if (user.Name == null)
             {
@@ -115,11 +120,11 @@ namespace AmpRageRepo.Controllers
         //public async Task<IActionResult> CreatePath(Path path)
         public async Task<IActionResult> CreatePath(Path path)
         {
-            path.Car = LicensePlateSearcher.CheckForCarInDatabase(path.CarBrand, path.CarMake);
+            //path.Car = LicensePlateSearcher.CheckForCarInDatabase(path.CarBrand, path.CarMake);
 
-            //If car couldnt be found set it to a default one
-            if (path.Car == null)
-                path.Car = LicensePlateSearcher.CheckForCarInDatabase("BMW", "iX3");
+            ////If car couldnt be found set it to a default one
+            //if (path.Car == null)
+            //    path.Car = LicensePlateSearcher.CheckForCarInDatabase("BMW", "iX3");
 
 
             path.RangeKm = path.Car.Range;
