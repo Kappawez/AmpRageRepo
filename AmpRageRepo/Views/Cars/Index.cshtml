@@ -12,9 +12,9 @@
 <table class="table" style="color:white;">
     <thead>
         <tr>
-            <th>
+            @*<th>
                 @Html.DisplayNameFor(model => model.LicensePlate)
-            </th>
+            </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.Brand)
             </th>
@@ -45,9 +45,9 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
+            @*<td>
                 @Html.DisplayFor(modelItem => item.LicensePlate)
-            </td>
+            </td>*@
             <td>
                 @Html.DisplayFor(modelItem => item.Brand)
             </td>

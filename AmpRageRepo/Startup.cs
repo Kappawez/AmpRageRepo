@@ -88,7 +88,7 @@ namespace AmpRageRepo
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Path}/{action=CreatePath}/{id?}");
+                    template: "{controller=Setup}/{action=Index}/{id?}");
             });
         }
     }

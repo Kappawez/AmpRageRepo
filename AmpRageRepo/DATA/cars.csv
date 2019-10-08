@@ -1,2 +1,3 @@
-Brand, Make, Capacity, ZeroToHundred, TopSpeed, Range, Efficiency, FastCharge
-Tesla, Model 3 Standard, 55, 5.9, 210, 310, 14.8, 540
+Id,Brand,Make,Capacity,ZeroToHundred,TopSpeed,Range,Efficiency,Fastcharge,
+0,Tesla,Model 3 Standard Range,55,5.9,210,310,14.8,540,
+0,Audi,e-tron GT,83.7,3.5,240,425,19.7,850,

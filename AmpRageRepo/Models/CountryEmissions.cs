@@ -9,6 +9,6 @@ namespace AmpRageRepo.Models
     {
         public int Id { get; set; }
         public string Country { get; set; }
-        public double KgCo2Kwh { get; set; }
+        public double CO2 { get; set; }
     }
 }

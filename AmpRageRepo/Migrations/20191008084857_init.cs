@@ -14,7 +14,6 @@ namespace AmpRageRepo.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    LicensePlate = table.Column<string>(nullable: true),
                     Brand = table.Column<string>(nullable: true),
                     Make = table.Column<string>(nullable: true),
                     Capacity = table.Column<decimal>(nullable: false),
@@ -36,7 +35,7 @@ namespace AmpRageRepo.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Country = table.Column<string>(nullable: true),
-                    KgCo2Kwh = table.Column<double>(nullable: false)
+                    CO2 = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {

@@ -21,11 +21,10 @@ namespace AmpRageRepo.Models
         //}
         public AmpContext(IConfiguration configuration)
         {
-            dbConnectionString = configuration.GetConnectionString("DbLocal");
+            DbConnectionString = configuration.GetConnectionString("DbLocal");
         }
 
-        private string dbConnectionString;
-
+        public virtual string DbConnectionString { get; private set; }
         public virtual DbSet<Car> Cars { get; set; }
         //public virtual DbSet<RootObject> RootObjects { get; set; }
         public virtual DbSet<User> Users { get; set; }
@@ -39,7 +38,7 @@ namespace AmpRageRepo.Models
             if (!optionsBuilder.IsConfigured)
             {
                 //optionsBuilder.UseSqlServer("Server=tcp:amprage.database.windows.net,1433;Initial Catalog=AmpRageDB;Persist Security Info=False;User ID=Shadowacademy;Password=PatrikWiksten2019;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-                optionsBuilder.UseSqlServer(dbConnectionString);
+                optionsBuilder.UseSqlServer(DbConnectionString);
             }
         }
 

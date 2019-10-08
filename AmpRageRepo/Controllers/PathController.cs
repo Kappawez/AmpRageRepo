@@ -8,6 +8,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
 
 namespace AmpRageRepo.Controllers
 {
@@ -80,11 +81,6 @@ namespace AmpRageRepo.Controllers
 
         public IActionResult CreatePath(UserViewModel user)
         {
-            if (_context.Cars.Count() == 0)
-            {
-                return RedirectToAction("Setup", "Setup");
-            }
-
             var path = new Path()
             {
                 User = new User() { Name = "" },
@@ -447,7 +443,7 @@ namespace AmpRageRepo.Controllers
             var currentBattery = GetCurrentBattery(path); //kWh
             var maxBattery = (double)path.Car.Capacity; //kWh
             var batteryDiff = maxBattery - currentBattery; //kWh
-            var co2 = countryEmissions.KgCo2Kwh; //g/co2
+            var co2 = countryEmissions.CO2; //g/co2
             var emissions = batteryDiff * co2; //g co2 to charge
             var round = Math.Round(emissions, 6);
 

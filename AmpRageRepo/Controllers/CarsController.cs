@@ -151,7 +151,7 @@ namespace AmpRageRepo.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CarExists(int id)
+        private bool CarExists(int? id)
         {
             return _context.Cars.Any(e => e.Id == id);
         }
