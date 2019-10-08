@@ -29,14 +29,11 @@ namespace AmpRageRepo.Controllers
         {
             return View();
         }
-        private IActionResult Continue()
+        public IActionResult Continue()
         {
-            var x = "hello";
-
             return RedirectToAction("CreatePath", "Path");
         }
-        [HttpPost]
-        private async Task<IActionResult> Recreate()
+        public async Task<IActionResult> Recreate()
         {
             //Called from button
             try
@@ -44,26 +41,49 @@ namespace AmpRageRepo.Controllers
                 await _context.Database.EnsureDeletedAsync();
                 await _context.Database.EnsureCreatedAsync();
                 ViewData["Message"] = "Database recreated";
-                return RedirectToAction(nameof(Index));
+                return View("Index");
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
         }
-        private async Task<IActionResult> Seed()
+        [HttpPost]
+        public async Task<IActionResult> Seed(string key)
         {
             //Called from button
             try
             {
                 var cars = await SeedCars();
                 var emissions = await SeedEmissions();
+                var keys = await AddKeys(key);
 
                 if (cars == false || emissions == false)
                     throw new Exception("Failed to seed!");
 
                 ViewData["Message"] = "Seeding done";
                 return View("Index");
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        private async Task<bool> AddKeys(string apiKey)
+        {
+            try
+            {
+                var key = new Key
+                {
+                    Type = "Google",
+                    DateTime = DateTime.Now,
+                    Value = apiKey
+                };
+
+                await _context.AddAsync(key);
+                await _context.SaveChangesAsync();
+
+                return true;
             }
             catch (Exception e)
             {

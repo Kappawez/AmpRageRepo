@@ -15,13 +15,12 @@ namespace AmpRageRepo.Controllers
     public class PathController : Controller
     {
         private readonly AmpContext _context;
+        private string apiKey;
 
         public PathController(AmpContext ampContext)
         {
             _context = ampContext;
         }
-
-        public static string apiKey = "AIzaSyBhIgKBChJZ9HwlAS5FdKkMFKuneDc8RjY";
 
         public async Task<IActionResult> Snabb()
         {
@@ -81,25 +80,30 @@ namespace AmpRageRepo.Controllers
 
         public IActionResult CreatePath(UserViewModel user)
         {
+            var allCars = _context.Cars.ToList();
+            var allCarBrands = allCars.Select(b => b.Brand).OrderBy(x => x).Distinct().ToList();
+            var allCarModels = allCars.Select(m => m.Make).OrderBy(x => x).Distinct().ToList();
+
             var path = new Path()
             {
                 User = new User() { Name = "" },
-                //AllCarBrands = LicensePlateSearcher.GetAllBrands().Select(x => new SelectListItem
-                //{
-                //    Text = x,
-                //    Value = x.ToString()
-                //}),
-                //AllCarModels = LicensePlateSearcher.GetAllModels().Select(x => new SelectListItem
-                //{
-                //    Text = x,
-                //    Value = x.ToString()
-                //}),
-                //AllCars = LicensePlateSearcher.GetAllCars().Select(x => new SelectListItem
-                //{
-                //    Text = x.Brand,
-                //    Value = x.Make.ToString().Replace(';', ' ') + $" - ({x.Range}km)"
-                //}),
-                //Cars = _context.Cars.ToList()
+                Cars = allCars,
+                ApiKey = _context.Keys.OrderByDescending(x => x.DateTime).FirstOrDefault().Value,
+                AllCarBrands = allCarBrands.Select(x => new SelectListItem
+                {
+                    Text = x,
+                    Value = x.ToString()
+                }),
+                AllCarModels = allCarModels.Select(x => new SelectListItem
+                {
+                    Text = x,
+                    Value = x.ToString()
+                }),
+                AllCars = allCars.Select(x => new SelectListItem
+                {
+                    Text = x.Brand,
+                    Value = x.Make
+                }),
             };
             if (user.Name == null)
             {
@@ -110,6 +114,8 @@ namespace AmpRageRepo.Controllers
                 path.User = _context.Users.Where(x => x.Name == user.Name && x.Phone == user.Phone && x.Password == user.Password).Include(x => x.UserCars).ThenInclude(x => x.Car).FirstOrDefault();
             }
 
+
+            //apiKey = path.ApiKey;
             return View(path);
         }
         [HttpPost]
@@ -121,10 +127,11 @@ namespace AmpRageRepo.Controllers
             ////If car couldnt be found set it to a default one
             //if (path.Car == null)
             //    path.Car = LicensePlateSearcher.CheckForCarInDatabase("BMW", "iX3");
+            path.ApiKey = _context.Keys.OrderByDescending(x => x.DateTime).FirstOrDefault().Value;
+            apiKey = path.ApiKey;
 
-
+            path.Car = _context.Cars.Where(x => x.Make == path.CarMake).FirstOrDefault();
             path.RangeKm = path.Car.Range;
-
             path.MaxRangeM = (path.RangeKm * 1000);    //km -> m
             path.MinRangeM = (path.RangeKm * 1000 * 0.2); //20% of MaxRangeM
             path.EffectiveRangeM = path.MaxRangeM - path.MinRangeM; //diff

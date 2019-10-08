@@ -20,7 +20,7 @@
 //        {
 //            var newCarMake = carMake.Split('-')[0].Trim().Replace(' ', ';');
 //            var car = _contex.Cars.Where(x => x.Brand == carBrand && x.Make == carMake).FirstOrDefault();
-          
+
 //            return car;
 //        }
 
@@ -58,7 +58,7 @@
 
 //        internal static IEnumerable<Car> GetAllCars()
 //        {
-//           return _contex.Cars.ToList();
+//            return _contex.Cars.ToList();
 
 //        }
 //    }

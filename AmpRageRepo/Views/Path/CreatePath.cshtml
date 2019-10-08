@@ -6,10 +6,11 @@
 <div class="logoamprage" style="text-align: center"><h1 class="display-3 pulse"><img src="~/fav1.png" width="60" height="60" /><b>A</b>mp<b>R</b>age</h1></div>
 
 
-<div id="currentUserDiv" class="float-right text-white" style="margin-right: 20px;">Inloggad som: DennaSkaAldrigSynas</div><br />
+<div id="currentUserDiv" class="float-right text-white" style="margin-right: 20px;">Inloggad som: DennaSkaAldrigSynas</div>
+<br />
 <div class="dropdown dropleft float-right" style="margin-right: 10px">
     <button id="loginButton" class="btn btn-primary dropdown-toggle" data-toggle="collapse" data-target="#login" href="#">Logga in <span class="glyphicon glyphicon-log-in"></span></button>
-    <div id ="login" class="dropdown-menu" style="width: 250px; padding:10px;">
+    <div id="login" class="dropdown-menu" style="width: 250px; padding:10px;">
 
         <input type="radio" id="radioLogin" class="" style="margin: 5px">Logga in<br />
         <input type="radio" id="radioRegister" class="" style="margin: 5px">Registrera dig<br />
@@ -97,7 +98,7 @@
                     </select>
                 </div>
 
-                <div class="form-group" id="makeAdd" >
+                <div class="form-group" id="makeAdd">
                     <select asp-for="CarMake" id="CarMakeAdd" class="form-control rounded-pill" style="width:300px">
                         @{var arrayOfCars = Model.AllCars.ToArray(); }
                         @{var listOfBrand = new List<string>();}
@@ -232,7 +233,8 @@
 
 @section scripts{
 
-    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBhIgKBChJZ9HwlAS5FdKkMFKuneDc8RjY" type="text/javascript"></script>
+    @*<script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBhIgKBChJZ9HwlAS5FdKkMFKuneDc8RjY" type="text/javascript"></script>*@
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=@Model.ApiKey" type="text/javascript"></script>
 
     <script>
         $(document).ready(function () {
@@ -246,7 +248,7 @@
             });
         });
 
-         $("#addCarButton").on('click', function () {
+        $("#addCarButton").on('click', function () {
             var $optgroups = $('#CarMakeAdd > optgroup');
             $("#makeAdd").hide();
 

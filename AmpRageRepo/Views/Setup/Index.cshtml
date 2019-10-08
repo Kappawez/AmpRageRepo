@@ -1,8 +1,25 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿<h1>Setup</h1>
 
 <form style="margin-top: 2em;">
-    <button asp-action="Recreate" class="btn btn-default">Recreate</button>
-    <button asp-action="Seed" class="btn btn-default">Seed</button>
+    <button asp-action="Recreate" class="std-btn">Recreate</button>
 </form>
+<form style="margin-top: 2em;" method="post">
+    <input type="text" id="key" name="key" placeholder="Enter google API key"/>
+    <input type="submit" asp-action="Seed" class="std-btn" value="Seed" />
+</form>
+@*<form asp-action="Index" asp-controller="Form">
+    <label asp-for="FirstName"></label>
+    <input asp-for="FirstName" placeholder="Your name goes here" />
+    <input type="submit" />
+</form>*@
+<form style="margin-top: 2em;">
+    <button asp-action="Continue" class="std-btn">Continue</button>
+</form>
+
+
+@{
+    if (ViewData["Message"] != null)
+    {
+        <p class="alert alert-success" style="margin-top: 2em;">@ViewData["Message"]</p>
+    }
+}
